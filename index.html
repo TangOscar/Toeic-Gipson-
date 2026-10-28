@@ -463,13 +463,13 @@
             let subj = subjectsSingular[i % subjectsSingular.length];
             let opts = shuffleArray([c.act, ...c.distractors]);
             addQuestions([{
-                q: \`\${subj} \${c.verb} \${c.obj} ______ the documents before the meeting.\`,
+                q: `${subj} ${c.verb} ${c.obj} ______ the documents before the meeting.`,
                 options: opts,
                 correct: opts.indexOf(c.act),
                 rule: "Verbes Causatifs",
-                exp: \`Le verbe causatif '\${c.verb}' exige \${c.rule === 'base verbale' ? 'la base verbale (sans to)' : "l'infinitif complet ('to' + verbe)"} pour l'action qui suit.\`,
+                exp: `Le verbe causatif '${c.verb}' exige ${c.rule === 'base verbale' ? 'la base verbale (sans to)' : "l'infinitif complet ('to' + verbe)"} pour l'action qui suit.`,
                 tip: "HAVE et MAKE = pas de 'to'. GET, ALLOW, ASK, TELL = avec 'to'.",
-                shortcut: \`Tu vois '\${c.verb}' + quelqu'un + [trou] ? Tire sur '\${c.act}' !\`
+                shortcut: `Tu vois '${c.verb}' + quelqu'un + [trou] ? Tire sur '${c.act}' !`
             }]);
         }
     });
@@ -486,13 +486,13 @@
             if(pv.ing==="receiving") base="receive";
             let opts = shuffleArray([pv.ing, base, "to " + base, base+"s"]);
             addQuestions([{
-                q: \`\${subj} strongly \${pv.v} ______ the new policies next month.\`,
+                q: `${subj} strongly ${pv.v} ______ the new policies next month.`,
                 options: opts,
                 correct: opts.indexOf(pv.ing),
                 rule: "Gérondif Obligatoire",
-                exp: \`Après la préposition '\${pv.prep}' du verbe '\${pv.v}', il faut ABSOLUMENT utiliser la forme en -ING.\`,
-                tip: \`Attention au piège : ici le 'to' n'est pas une marque d'infinitif, c'est une préposition attachée à '\${pv.v.split(' ')[0]}'.\`,
-                shortcut: \`'\${pv.v}' + [trou] = Toujours mot en -ING.\`
+                exp: `Après la préposition '${pv.prep}' du verbe '${pv.v}', il faut ABSOLUMENT utiliser la forme en -ING.`,
+                tip: `Attention au piège : ici le 'to' n'est pas une marque d'infinitif, c'est une préposition attachée à '${pv.v.split(' ')[0]}'.`,
+                shortcut: `'${pv.v}' + [trou] = Toujours mot en -ING.`
             }]);
         }
     });
@@ -672,7 +672,7 @@
             document.getElementById('tip-title-label').style.color = "#ef5350"; 
         }
         
-        feedbackExp.innerHTML = \`<strong>Why partner?</strong><br>\${q.exp}\`;
+        feedbackExp.innerHTML = `<strong>Why partner?</strong><br>${q.exp}`;
         document.getElementById('feedback-tip-text').textContent = q.tip;
         document.getElementById('feedback-shortcut-text').textContent = q.shortcut;
         
@@ -698,7 +698,7 @@
         scoreDisplay.textContent = score;
         streakDisplay.textContent = streak;
         qCounter.textContent = Math.min(currentIndex + 1, currentQuestions.length);
-        progress.style.width = \`\${(currentIndex / currentQuestions.length) * 100}%\`;
+        progress.style.width = `${(currentIndex / currentQuestions.length) * 100}%`;
     }
 
     function endGame() {
