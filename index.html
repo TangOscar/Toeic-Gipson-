@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Jeu TOEIC - Ultimate Masterclass Edition (Mr. Gipson)</title>
+    <meta name="theme-color" content="#2b1b17">
+    <meta name="description" content="Entraînement TOEIC Partie 5, en mode western.">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="TOEIC Gipson">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script src="confetti.browser.js"></script>
+    <style>
+@font-face{font-family:'Nunito';font-style:normal;font-weight:400;font-display:swap;src:url('nunito-latin-400-normal.woff2') format('woff2')}
+@font-face{font-family:'Nunito';font-style:normal;font-weight:700;font-display:swap;src:url('nunito-latin-700-normal.woff2') format('woff2')}
+@font-face{font-family:'Nunito';font-style:normal;font-weight:900;font-display:swap;src:url('nunito-latin-900-normal.woff2') format('woff2')}
+@font-face{font-family:'Rye';font-style:normal;font-weight:400;font-display:swap;src:url('rye-latin-400-normal.woff2') format('woff2')}
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #2b1b17 0%, #4a2e2b 100%);
+            color: #f5deb3; 
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+        
+        .game-container {
+            background: rgba(25, 15, 10, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            border: 2px solid #8b4513; 
+            position: relative;
+            z-index: 2;
+        }
+
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: 5px; left: 5px; right: 5px; bottom: 5px;
+            border: 1px dashed #d2b48c;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
+            40%, 60% { transform: translate3d(8px, 0, 0); }
+        }
+        .shake {
+            animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+            border-color: #f44336;
+            box-shadow: 0 15px 35px rgba(244, 67, 54, 0.4);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-family: 'Rye', serif; 
+            color: #d2b48c;
+            letter-spacing: 1px;
+        }
+        
+        /* Nouveau style pour le chrono */
+        .timer {
+            font-size: 1.4rem;
+            color: #f5deb3;
+            background: rgba(0,0,0,0.4);
+            padding: 5px 15px;
+            border-radius: 8px;
+            border: 1px solid #8b4513;
+            transition: color 0.3s;
+        }
+        @keyframes pulseAlert {
+            0% { transform: scale(1); color: #ef5350; }
+            50% { transform: scale(1.1); color: #ff1744; text-shadow: 0 0 10px red; }
+            100% { transform: scale(1); color: #ef5350; }
+        }
+        .timer.alert {
+            animation: pulseAlert 1s infinite;
+            border-color: #ef5350;
+        }
+
+        .streak { color: #ff8c00; text-shadow: 0 0 10px rgba(255,140,0,0.5); }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 6px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            border: 1px solid #8b4513;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d2691e, #ff8c00);
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.5;
+            color: #fff8dc;
+        }
+        .question-text strong {
+            color: #ff8c00;
+            border-bottom: 2px dashed #ff8c00;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .option-btn {
+            background: #3e2723;
+            color: #f5deb3;
+            border: 2px solid #8b4513;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-family: 'Nunito', sans-serif;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 3px 3px 0px #1a0f0a;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            background: #4e342e;
+            box-shadow: 5px 5px 0px #1a0f0a;
+        }
+        .option-btn:active:not(:disabled) {
+            transform: translateY(1px);
+            box-shadow: 1px 1px 0px #1a0f0a;
+        }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.9; }
+        
+        .correct {
+            background: #2e7d32 !important;
+            color: white !important;
+            border-color: #4caf50 !important;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.5) !important;
+        }
+        .wrong {
+            background: #c62828 !important;
+            color: white !important;
+            border-color: #ef5350 !important;
+        }
+
+        .feedback-container {
+            display: none;
+            align-items: flex-start;
+            margin-top: 25px;
+            animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .feedback-container.show {
+            display: flex;
+        }
+        
+        .character-container {
+            width: 140px;
+            min-width: 140px;
+            margin-right: 25px;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .character-container svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .feedback-bubble {
+            flex: 1;
+            background: rgba(43, 27, 23, 0.9);
+            border: 2px solid #d2b48c;
+            border-radius: 15px;
+            border-top-left-radius: 0;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.4);
+            color: #f5deb3;
+        }
+        .feedback-bubble::before {
+            content: '';
+            position: absolute;
+            left: -18px;
+            top: -2px;
+            border-style: solid;
+            border-width: 0 18px 22px 0;
+            border-color: transparent #d2b48c transparent transparent;
+        }
+        .feedback-bubble::after {
+            content: '';
+            position: absolute;
+            left: -14px;
+            top: 0;
+            border-style: solid;
+            border-width: 0 15px 18px 0;
+            border-color: transparent #2b1b17 transparent transparent;
+        }
+
+        .feedback-header {
+            font-size: 1.3rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #8b4513;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Rye', serif;
+        }
+
+        .feedback-rule-badge {
+            background: #8b4513;
+            color: #f5deb3;
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Nunito', sans-serif;
+            border: 1px solid #d2b48c;
+        }
+        
+        .feedback-exp {
+            font-size: 1.05rem;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .toeic-tip, .toeic-shortcut {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+            background: rgba(0,0,0,0.2);
+        }
+        
+        .toeic-tip {
+            border-left: 4px solid #ffd700;
+        }
+        
+        .toeic-shortcut {
+            border-left: 4px solid #ff4500;
+        }
+
+        .tip-title { font-weight: 900; color: #ffd700; margin-bottom: 5px; display: block; letter-spacing: 0.5px; }
+        .shortcut-title { font-weight: 900; color: #ff4500; margin-bottom: 5px; display: block; letter-spacing: 0.5px;}
+
+        .next-btn {
+            width: 100%;
+            padding: 18px;
+            margin-top: 20px;
+            background: #8b4513;
+            color: #f5deb3;
+            border: 2px solid #d2b48c;
+            border-radius: 8px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            font-family: 'Rye', serif;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 4px 4px 0px #1a0f0a;
+        }
+        .next-btn:hover { 
+            background: #a0522d;
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 0px #1a0f0a;
+        }
+        .next-btn:active {
+            transform: translateY(2px);
+            box-shadow: 2px 2px 0px #1a0f0a;
+        }
+        
+        .end-screen { text-align: center; display: none; }
+        .end-screen h1 { font-family: 'Rye', serif; font-size: 3.5rem; margin-bottom: 10px; color: #ff8c00; }
+        .end-screen p { font-size: 1.3rem; margin-bottom: 30px; }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+            70% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0); }
+        }
+        
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .feedback-container {
+                flex-direction: column;
+                align-items: center;
+                margin-top: 15px;
+            }
+            .character-container {
+                width: 110px;
+                min-width: 110px;
+                margin-right: 0;
+                margin-bottom: -15px;
+                z-index: 10;
+            }
+            .feedback-bubble {
+                width: 100%;
+                border-top-left-radius: 15px;
+                box-sizing: border-box;
+            }
+            .feedback-bubble::before, .feedback-bubble::after { display: none; }
+            .header { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container" id="game-panel">
+    <div class="header">
+        <div>Bounty: $<span id="score-display">0</span></div>
+        <div class="timer" id="timer-box">⏳ <span id="time-display">30</span>s</div>
+        <div class="streak">🔥 Lasso: <span id="streak-display">0</span></div>
+        <div>Round <span id="q-counter">1</span>/30</div>
+    </div>
+    
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+
+    <div class="question-text" id="question-text">Loading the duel...</div>
+
+    <div class="options-grid" id="options-container"></div>
+
+    <div class="feedback-container" id="feedback-container">
+        <div class="character-container" id="character-avatar"></div>
+        <div class="feedback-bubble" id="feedback-bubble">
+            <div class="feedback-header">
+                <span id="feedback-title"></span>
+                <span class="feedback-rule-badge" id="feedback-rule">Rule</span>
+            </div>
+            <div class="feedback-exp" id="feedback-exp"></div>
+            <div class="toeic-tip">
+                <span class="tip-title" id="tip-title-label">🌵 MR. GIPSON'S WISDOM</span>
+                <span id="feedback-tip-text"></span>
+            </div>
+            <div class="toeic-shortcut">
+                <span class="shortcut-title">🔫 QUICK DRAW REFLEX</span>
+                <span id="feedback-shortcut-text"></span>
+            </div>
+            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Ride On ➔</button>
+        </div>
+    </div>
+</div>
+
+<div class="game-container end-screen" id="end-panel">
+    <h1>Duel Over!</h1>
+    <p>Your Bounty: $<strong id="final-score">0</strong> (out of 30)</p>
+    <div id="final-character" style="width: 180px; margin: 0 auto 20px auto;"></div>
+    <p id="final-message"></p>
+    <button class="next-btn show" style="display:block;" onclick="startGame()">Saddle Up for Another Round</button>
+</div>
+
+<script>
+    // --- MR. GIPSON SVG ---
+    const happyGipson = `
+    <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 10 40 Q 50 20 90 40 L 95 45 Q 50 30 5 45 Z" fill="#5D4037"/>
+        <path d="M 25 35 C 25 15, 75 15, 75 35" fill="#4E342E"/>
+        <circle cx="50" cy="60" r="25" fill="#FFCC80"/>
+        <path d="M 30 75 L 50 95 L 70 75 Z" fill="#D32F2F"/>
+        <circle cx="50" cy="80" r="3" fill="#B71C1C"/>
+        <circle cx="45" cy="85" r="2" fill="#B71C1C"/>
+        <circle cx="55" cy="85" r="2" fill="#B71C1C"/>
+        <rect x="33" y="52" width="14" height="8" rx="2" fill="#212121"/>
+        <rect x="53" y="52" width="14" height="8" rx="2" fill="#212121"/>
+        <line x1="47" y1="56" x2="53" y2="56" stroke="#212121" stroke-width="2"/>
+        <path d="M 35 68 Q 50 62 65 68 Q 75 75 60 72 Q 50 75 40 72 Q 25 75 35 68 Z" fill="#3E2723"/>
+        <path d="M 15 42 Q 50 55 85 42 Q 95 38 100 45 Q 50 60 0 45 Q 5 38 15 42 Z" fill="#5D4037"/>
+        <path d="M 27 35 Q 50 40 73 35" fill="none" stroke="#3E2723" stroke-width="3"/>
+        <rect x="47" y="35" width="6" height="4" fill="#FFD700"/>
+    </svg>`;
+
+    const strictGipson = `
+    <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 10 40 Q 50 20 90 40 L 95 45 Q 50 30 5 45 Z" fill="#5D4037"/>
+        <path d="M 25 35 C 25 15, 75 15, 75 35" fill="#4E342E"/>
+        <circle cx="50" cy="60" r="25" fill="#FFB74D"/>
+        <path d="M 30 75 L 50 95 L 70 75 Z" fill="#D32F2F"/>
+        <line x1="30" y1="48" x2="45" y2="54" stroke="#3E2723" stroke-width="3" stroke-linecap="round"/>
+        <line x1="70" y1="48" x2="55" y2="54" stroke="#3E2723" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="38" cy="56" r="3" fill="#212121"/>
+        <circle cx="62" cy="56" r="3" fill="#212121"/>
+        <circle cx="38" cy="55" r="1" fill="#fff"/>
+        <circle cx="62" cy="55" r="1" fill="#fff"/>
+        <path d="M 32 70 Q 50 65 68 70 Q 70 80 60 76 Q 50 78 40 76 Q 30 80 32 70 Z" fill="#3E2723"/>
+        <circle cx="75" cy="65" r="2" fill="#9E9E9E" opacity="0.8"/>
+        <circle cx="78" cy="60" r="3" fill="#9E9E9E" opacity="0.6"/>
+        <circle cx="82" cy="53" r="4" fill="#9E9E9E" opacity="0.4"/>
+        <path d="M 15 45 Q 50 60 85 45 Q 95 40 100 48 Q 50 65 0 48 Q 5 40 15 45 Z" fill="#5D4037"/>
+        <path d="M 27 38 Q 50 45 73 38" fill="none" stroke="#3E2723" stroke-width="3"/>
+    </svg>`;
+
+    // --- MOTEUR DE QUESTIONS ---
+    const subjectsSingular = ["The branch manager", "The executive director", "Mr. Halloway", "The lead engineer", "The client", "The auditor", "The HR representative"];
+    const subjectsPlural = ["The board members", "The shareholders", "The technicians", "The applicants", "The regional supervisors", "The consultants"];
+    const companies = ["The corporation", "The firm", "The agency", "The local branch", "The startup", "The enterprise"];
+    const objects = ["the proposal", "the contract", "the quarterly report", "the budget", "the initial blueprint", "the schedule"];
+    
+    let dbQuestions = [];
+
+    function addQuestions(questionsToAdd) {
+        dbQuestions = dbQuestions.concat(questionsToAdd);
+    }
+
+    function shuffleArray(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // REGLE 1 : Causatifs
+    const causatives = [
+        { verb: "had", rule: "base verbale", obj: "his assistant", act: "book", distractors: ["to book", "booked", "booking"] },
+        { verb: "made", rule: "base verbale", obj: "the team", act: "rewrite", distractors: ["to rewrite", "rewritten", "rewriting"] },
+        { verb: "got", rule: "to + infinitif", obj: "the vendor", act: "to reduce", distractors: ["reduce", "reduced", "reducing"] }
+    ];
+    causatives.forEach(c => {
+        for(let i=0; i<15; i++) {
+            let subj = subjectsSingular[i % subjectsSingular.length];
+            let opts = shuffleArray([c.act, ...c.distractors]);
+            addQuestions([{
+                q: \`\${subj} \${c.verb} \${c.obj} ______ the documents before the meeting.\`,
+                options: opts,
+                correct: opts.indexOf(c.act),
+                rule: "Verbes Causatifs",
+                exp: \`Le verbe causatif '\${c.verb}' exige \${c.rule === 'base verbale' ? 'la base verbale (sans to)' : "l'infinitif complet ('to' + verbe)"} pour l'action qui suit.\`,
+                tip: "HAVE et MAKE = pas de 'to'. GET, ALLOW, ASK, TELL = avec 'to'.",
+                shortcut: \`Tu vois '\${c.verb}' + quelqu'un + [trou] ? Tire sur '\${c.act}' !\`
+            }]);
+        }
+    });
+
+    // REGLE 2 : Phrasal Verbs
+    const phrasalVerbs = [
+        { v: "look forward to", prep: "to", ing: "receiving", tip: "look forward to + ING" },
+        { v: "object to", prep: "to", ing: "implementing", tip: "object to + ING" }
+    ];
+    phrasalVerbs.forEach(pv => {
+        for(let i=0; i<15; i++) {
+            let subj = subjectsPlural[i % subjectsPlural.length];
+            let base = pv.ing.replace("ing", "").replace("e", ""); 
+            if(pv.ing==="receiving") base="receive";
+            let opts = shuffleArray([pv.ing, base, "to " + base, base+"s"]);
+            addQuestions([{
+                q: \`\${subj} strongly \${pv.v} ______ the new policies next month.\`,
+                options: opts,
+                correct: opts.indexOf(pv.ing),
+                rule: "Gérondif Obligatoire",
+                exp: \`Après la préposition '\${pv.prep}' du verbe '\${pv.v}', il faut ABSOLUMENT utiliser la forme en -ING.\`,
+                tip: \`Attention au piège : ici le 'to' n'est pas une marque d'infinitif, c'est une préposition attachée à '\${pv.v.split(' ')[0]}'.\`,
+                shortcut: \`'\${pv.v}' + [trou] = Toujours mot en -ING.\`
+            }]);
+        }
+    });
+
+    // REGLE 3 : Connecteurs
+    const connectors = [
+        { c: "Therefore", ctx: "The budget was cut by 20%. ______, several projects were delayed.", wrong: ["Nevertheless", "Otherwise", "Whereas"], exp: "Exprime la conséquence (Donc)." },
+        { c: "Nevertheless", ctx: "Sales dropped in Q1. ______, the CEO remains optimistic.", wrong: ["Therefore", "Consequently", "Thus"], exp: "Exprime la concession (Néanmoins)." }
+    ];
+    connectors.forEach(con => {
+        for(let i=0; i<15; i++) {
+            let opts = shuffleArray([con.c, ...con.wrong]);
+            addQuestions([{
+                q: con.ctx.replace(con.c, "______"),
+                options: opts,
+                correct: opts.indexOf(con.c),
+                rule: "Connecteurs Logiques",
+                exp: con.exp,
+                tip: "Lis bien la phrase AVANT et APRÈS. Est-ce une cause ? Un contraste ? Un avertissement ?",
+                shortcut: "Contraste + virgule = Nevertheless/However. Conséquence + virgule = Therefore/Consequently."
+            }]);
+        }
+    });
+
+    // Remplissage rapide
+    let currentLen = dbQuestions.length;
+    while(dbQuestions.length < 300) {
+        let baseQ = dbQuestions[Math.floor(Math.random() * currentLen)];
+        let newQ = JSON.parse(JSON.stringify(baseQ));
+        newQ.q = newQ.q.replace("tomorrow", "next week").replace("yesterday", "recently");
+        dbQuestions.push(newQ);
+    }
+
+
+    // --- GESTION DU JEU ET DU CHRONOMETRE ---
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let streak = 0;
+    
+    // Variables du Chrono
+    let timerInterval;
+    let timeLeft = 30;
+
+    const gamePanel = document.getElementById('game-panel');
+    const endPanel = document.getElementById('end-panel');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const scoreDisplay = document.getElementById('score-display');
+    const streakDisplay = document.getElementById('streak-display');
+    const qCounter = document.getElementById('q-counter');
+    const progress = document.getElementById('progress');
+    
+    const timeDisplay = document.getElementById('time-display');
+    const timerBox = document.getElementById('timer-box');
+
+    const feedbackContainer = document.getElementById('feedback-container');
+    const characterAvatar = document.getElementById('character-avatar');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackRule = document.getElementById('feedback-rule');
+    const feedbackExp = document.getElementById('feedback-exp');
+
+    function startTimer() {
+        clearInterval(timerInterval); // Nettoie au cas où
+        timeLeft = 30;
+        timeDisplay.textContent = timeLeft;
+        timerBox.classList.remove('alert');
+        
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timeDisplay.textContent = timeLeft;
+            
+            if (timeLeft <= 10 && timeLeft > 0) {
+                timerBox.classList.add('alert');
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerBox.classList.remove('alert');
+                checkAnswer(-1, null); // -1 signifie "temps écoulé"
+            }
+        }, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+        timerBox.classList.remove('alert');
+    }
+
+    function startGame() {
+        gamePanel.style.display = 'block';
+        endPanel.style.display = 'none';
+        
+        currentQuestions = shuffleArray(dbQuestions).slice(0, 30);
+        
+        currentIndex = 0;
+        score = 0;
+        streak = 0;
+        
+        updateStats();
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        feedbackContainer.classList.remove('show');
+        optionsContainer.innerHTML = '';
+        gamePanel.classList.remove('shake');
+        
+        const q = currentQuestions[currentIndex];
+        questionText.innerHTML = q.q.replace('______', '<strong>______</strong>');
+        
+        q.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = opt;
+            btn.onclick = () => checkAnswer(index, btn);
+            optionsContainer.appendChild(btn);
+        });
+        
+        updateStats();
+        startTimer(); // Lance le chrono UNIQUEMENT quand la question s'affiche
+    }
+
+    function checkAnswer(selectedIndex, selectedBtn) {
+        stopTimer(); // Coupe le chrono dès qu'on répond ou que le temps est écoulé
+        
+        const q = currentQuestions[currentIndex];
+        const buttons = optionsContainer.querySelectorAll('.option-btn');
+        
+        buttons.forEach(b => b.disabled = true);
+        feedbackRule.textContent = q.rule;
+        
+        if (selectedIndex === q.correct) {
+            selectedBtn.classList.add('correct');
+            score += 10; 
+            streak++;
+            
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#ff8c00', '#ffd700', '#2e7d32'],
+                    zIndex: 1000
+                });
+            }
+
+            characterAvatar.innerHTML = happyGipson;
+            feedbackTitle.innerHTML = "🎯 Bullseye! Mr. Gipson nods.";
+            feedbackTitle.style.color = "#4caf50";
+            feedbackRule.style.background = "#1b5e20";
+            feedbackRule.style.borderColor = "#4caf50";
+            document.getElementById('tip-title-label').style.color = "#ffd700";
+        } else {
+            // Mauvaise réponse OU Temps écoulé
+            if (selectedBtn) {
+                selectedBtn.classList.add('wrong');
+            }
+            buttons[q.correct].classList.add('correct');
+            streak = 0;
+            
+            gamePanel.classList.remove('shake');
+            void gamePanel.offsetWidth; 
+            gamePanel.classList.add('shake');
+
+            characterAvatar.innerHTML = strictGipson;
+            
+            if (selectedIndex === -1) {
+                feedbackTitle.innerHTML = "⏰ Too slow! The target got away.";
+            } else {
+                feedbackTitle.innerHTML = "❌ Misfire! Mr. Gipson glares at you.";
+            }
+            
+            feedbackTitle.style.color = "#ef5350";
+            feedbackRule.style.background = "#b71c1c";
+            feedbackRule.style.borderColor = "#ef5350";
+            document.getElementById('tip-title-label').style.color = "#ef5350"; 
+        }
+        
+        feedbackExp.innerHTML = \`<strong>Why partner?</strong><br>\${q.exp}\`;
+        document.getElementById('feedback-tip-text').textContent = q.tip;
+        document.getElementById('feedback-shortcut-text').textContent = q.shortcut;
+        
+        feedbackContainer.classList.add('show');
+        
+        setTimeout(() => {
+            document.getElementById('next-btn').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+
+        updateStats();
+    }
+
+    function nextQuestion() {
+        currentIndex++;
+        if (currentIndex < currentQuestions.length) {
+            loadQuestion();
+        } else {
+            endGame();
+        }
+    }
+
+    function updateStats() {
+        scoreDisplay.textContent = score;
+        streakDisplay.textContent = streak;
+        qCounter.textContent = Math.min(currentIndex + 1, currentQuestions.length);
+        progress.style.width = \`\${(currentIndex / currentQuestions.length) * 100}%\`;
+    }
+
+    function endGame() {
+        stopTimer(); // Sécurité
+        gamePanel.style.display = 'none';
+        endPanel.style.display = 'block';
+        document.getElementById('final-score').textContent = score;
+        
+        let msg = "";
+        let charSvg = "";
+        if(score >= 250) {
+            msg = "You're the fastest gun in the West! ETS better watch out. 🤠💰";
+            charSvg = happyGipson;
+            if (typeof confetti === 'function') {
+                const endConfetti = setInterval(() => {
+                    confetti({ particleCount: 50, spread: 100, origin: { y: 0.1 }, colors:['#ff8c00', '#ffd700'] });
+                }, 1500);
+                setTimeout(() => clearInterval(endConfetti), 5000);
+            }
+        }
+        else if (score >= 150) {
+            msg = "Not bad, Sheriff. A little more target practice and you'll be a legend. 🐴";
+            charSvg = happyGipson;
+        }
+        else {
+            msg = "Your gun jammed, rookie. Time to head back to the training camp. 🌵";
+            charSvg = strictGipson;
+        }
+        
+        document.getElementById('final-message').textContent = msg;
+        document.getElementById('final-character').innerHTML = charSvg;
+    }
+
+    startGame();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").catch(function (e) { console.warn("SW non enregistré :", e); });
+    });
+}
+</script>
+</body>
+</html>
