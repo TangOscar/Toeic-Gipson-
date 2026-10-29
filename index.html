@@ -342,6 +342,23 @@
             .feedback-bubble::before, .feedback-bubble::after { display: none; }
             .header { justify-content: center; }
         }
+
+        /* ===== v3 : améliorations visuelles ===== */
+        body{min-height:100vh;min-height:100dvh;padding:max(20px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));-webkit-tap-highlight-color:transparent}
+        .time-bar{height:10px;margin:-14px 0 24px;background:rgba(0,0,0,.45);border:1px solid #8b4513;border-radius:6px;overflow:hidden}
+        .time-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ffb347,#ff8c00);border-radius:5px;transition:width 1s linear}
+        .question-text{position:relative;margin:0 0 28px;padding:44px 24px 26px;color:#3a2414;font-size:1.45rem;font-weight:800;line-height:1.55;background:radial-gradient(ellipse at center,#f6e7bf 40%,#e2c88f 100%);border:3px double #7a4520;border-radius:6px;box-shadow:inset 0 0 36px rgba(122,69,32,.38),0 8px 18px rgba(0,0,0,.5);transform:rotate(-.4deg)}
+        .question-text::before{content:"★ WANTED : THE RIGHT WORD ★";position:absolute;top:12px;left:0;right:0;font:400 .8rem/1 'Rye',serif;letter-spacing:.14em;color:#8b1a1a}
+        .question-text strong{color:#8b1a1a;border-bottom:3px solid #8b1a1a;padding:0 .5em;letter-spacing:.1em}
+        .option-btn{display:flex;align-items:center;gap:12px;min-height:58px;touch-action:manipulation}
+        .option-btn:not(.correct):not(.wrong){background:linear-gradient(180deg,#8a5230,#6b3d1f);color:#fff3d6;border-color:#3d210e;box-shadow:0 4px 0 #2a1608,0 6px 10px rgba(0,0,0,.4);text-shadow:0 1px 1px rgba(0,0,0,.5)}
+        .option-btn:not(.correct):not(.wrong):hover:not(:disabled){filter:brightness(1.12)}
+        .option-btn:active:not(:disabled){transform:translateY(3px)}
+        .option-btn .key{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#f1e0b5;color:#3a2414;font:400 .9rem 'Rye',serif;text-shadow:none}
+        .next-btn{min-height:52px;touch-action:manipulation}
+        .end-screen .best{font-size:1.1rem;margin:-10px 0 20px;color:#ffd700}
+        @media (max-width:600px){.question-text{font-size:1.25rem;padding:40px 16px 22px}}
+        @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
     </style>
 </head>
 <body>
@@ -358,11 +375,12 @@
         <div class="progress-fill" id="progress"></div>
     </div>
 
+    <div class="time-bar" aria-hidden="true"><i id="time-fill"></i></div>
     <div class="question-text" id="question-text">Loading the duel...</div>
 
     <div class="options-grid" id="options-container"></div>
 
-    <div class="feedback-container" id="feedback-container">
+    <div class="feedback-container" id="feedback-container" aria-live="polite">
         <div class="character-container" id="character-avatar"></div>
         <div class="feedback-bubble" id="feedback-bubble">
             <div class="feedback-header">
@@ -386,13 +404,14 @@
 <div class="game-container end-screen" id="end-panel">
     <h1>Duel Over!</h1>
     <p>Your Bounty: $<strong id="final-score">0</strong> (out of 30)</p>
+    <p id="best-score" class="best"></p>
     <div id="final-character" style="width: 180px; margin: 0 auto 20px auto;"></div>
     <p id="final-message"></p>
     <button class="next-btn show" style="display:block;" onclick="startGame()">Saddle Up for Another Round</button>
 </div>
 
 <script>
-    // --- MR. GIPSON SVG ---
+    // ================= 1. PERSONNAGES (SVG) =================
     const happyGipson = `
     <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
         <path d="M 10 40 Q 50 20 90 40 L 95 45 Q 50 30 5 45 Z" fill="#5D4037"/>
@@ -432,6 +451,7 @@
     </svg>`;
 
     // --- MOTEUR DE QUESTIONS ---
+    // ================= 2. BANQUE DE QUESTIONS (générée) =================
     const subjectsSingular = ["The branch manager", "The executive director", "Mr. Halloway", "The lead engineer", "The client", "The auditor", "The HR representative"];
     const subjectsPlural = ["The board members", "The shareholders", "The technicians", "The applicants", "The regional supervisors", "The consultants"];
     const companies = ["The corporation", "The firm", "The agency", "The local branch", "The startup", "The enterprise"];
@@ -476,14 +496,13 @@
 
     // REGLE 2 : Phrasal Verbs
     const phrasalVerbs = [
-        { v: "look forward to", prep: "to", ing: "receiving", tip: "look forward to + ING" },
-        { v: "object to", prep: "to", ing: "implementing", tip: "object to + ING" }
+        { v: "look forward to", prep: "to", ing: "receiving", base: "receive", tip: "look forward to + ING" },
+        { v: "object to", prep: "to", ing: "implementing", base: "implement", tip: "object to + ING" }
     ];
     phrasalVerbs.forEach(pv => {
         for(let i=0; i<15; i++) {
             let subj = subjectsPlural[i % subjectsPlural.length];
-            let base = pv.ing.replace("ing", "").replace("e", ""); 
-            if(pv.ing==="receiving") base="receive";
+            const base = pv.base;
             let opts = shuffleArray([pv.ing, base, "to " + base, base+"s"]);
             addQuestions([{
                 q: `${subj} strongly ${pv.v} ______ the new policies next month.`,
@@ -527,7 +546,7 @@
     }
 
 
-    // --- GESTION DU JEU ET DU CHRONOMETRE ---
+    // ================= 3. MOTEUR DU JEU : chrono, score, écrans =================
     let currentQuestions = [];
     let currentIndex = 0;
     let score = 0;
@@ -555,38 +574,53 @@
     const feedbackRule = document.getElementById('feedback-rule');
     const feedbackExp = document.getElementById('feedback-exp');
 
+    const timeFill = document.getElementById('time-fill');
+    let timerActive = false;
+    function setTimeFill() { timeFill.style.width = Math.max(0, timeLeft / 30 * 100) + '%'; }
+    function tick() {
+        timeLeft--;
+        timeDisplay.textContent = timeLeft;
+        setTimeFill();
+        if (timeLeft <= 10 && timeLeft > 0) timerBox.classList.add('alert');
+        if (timeLeft <= 0) { stopTimer(); checkAnswer(-1, null); } // -1 = temps écoulé
+    }
     function startTimer() {
-        clearInterval(timerInterval); // Nettoie au cas où
+        clearInterval(timerInterval);
         timeLeft = 30;
         timeDisplay.textContent = timeLeft;
         timerBox.classList.remove('alert');
-        
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            timeDisplay.textContent = timeLeft;
-            
-            if (timeLeft <= 10 && timeLeft > 0) {
-                timerBox.classList.add('alert');
-            }
-            
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                timerBox.classList.remove('alert');
-                checkAnswer(-1, null); // -1 signifie "temps écoulé"
-            }
-        }, 1000);
+        timeFill.style.transition = 'none'; setTimeFill(); void timeFill.offsetWidth; timeFill.style.transition = '';
+        timerActive = true;
+        timerInterval = setInterval(tick, 1000);
     }
-
     function stopTimer() {
+        timerActive = false;
         clearInterval(timerInterval);
         timerBox.classList.remove('alert');
     }
+    // Pause du chrono quand l'app passe en arrière-plan
+    document.addEventListener('visibilitychange', () => {
+        if (!timerActive) return;
+        clearInterval(timerInterval);
+        if (!document.hidden) timerInterval = setInterval(tick, 1000);
+    });
+    function canConfetti() { return typeof confetti === 'function' && !matchMedia('(prefers-reduced-motion: reduce)').matches; }
+    // Clavier : A-D ou 1-4 pour répondre, Entrée pour continuer
+    document.addEventListener('keydown', e => {
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        const n = { '1': 0, '2': 1, '3': 2, '4': 3, a: 0, b: 1, c: 2, d: 3 }[e.key.toLowerCase()];
+        const btn = optionsContainer.querySelectorAll('.option-btn')[n];
+        if (n !== undefined && btn && !btn.disabled) { btn.click(); return; }
+        if (e.key === 'Enter' && document.activeElement.tagName !== 'BUTTON' && feedbackContainer.classList.contains('show')) nextQuestion();
+    });
 
     function startGame() {
         gamePanel.style.display = 'block';
         endPanel.style.display = 'none';
         
-        currentQuestions = shuffleArray(dbQuestions).slice(0, 30);
+        const seen = new Set();
+        currentQuestions = shuffleArray(dbQuestions).filter(q => !seen.has(q.q) && seen.add(q.q)).slice(0, 30);
+        if (currentQuestions.length < 30) currentQuestions = currentQuestions.concat(shuffleArray(dbQuestions).slice(0, 30 - currentQuestions.length));
         
         currentIndex = 0;
         score = 0;
@@ -607,7 +641,9 @@
         q.options.forEach((opt, index) => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
-            btn.textContent = opt;
+            const key = document.createElement('span'); key.className = 'key'; key.textContent = 'ABCD'[index];
+            const label = document.createElement('span'); label.textContent = opt;
+            btn.append(key, label);
             btn.onclick = () => checkAnswer(index, btn);
             optionsContainer.appendChild(btn);
         });
@@ -630,7 +666,7 @@
             score += 10; 
             streak++;
             
-            if (typeof confetti === 'function') {
+            if (canConfetti()) {
                 confetti({
                     particleCount: 100,
                     spread: 70,
@@ -706,13 +742,16 @@
         gamePanel.style.display = 'none';
         endPanel.style.display = 'block';
         document.getElementById('final-score').textContent = score;
+        let best = 0;
+        try { best = +localStorage.getItem('toeicGipsonBest') || 0; if (score > best) localStorage.setItem('toeicGipsonBest', score); } catch (e) {}
+        document.getElementById('best-score').textContent = score > best ? '🏅 New record!' : '🏅 Best bounty: $' + best;
         
         let msg = "";
         let charSvg = "";
         if(score >= 250) {
             msg = "You're the fastest gun in the West! ETS better watch out. 🤠💰";
             charSvg = happyGipson;
-            if (typeof confetti === 'function') {
+            if (canConfetti()) {
                 const endConfetti = setInterval(() => {
                     confetti({ particleCount: 50, spread: 100, origin: { y: 0.1 }, colors:['#ff8c00', '#ffd700'] });
                 }, 1500);
