@@ -1,17 +1,32 @@
 {
-  "name": "Jeu TOEIC – Mr. Gipson",
-  "short_name": "TOEIC Gipson",
-  "description": "Entraînement TOEIC Partie 5, en mode western.",
+  "name": "Part 5 Trainer – TOEIC Reading",
+  "short_name": "Part 5",
+  "description": "Entraînement TOEIC Reading, Part 5 : Incomplete Sentences.",
   "lang": "fr",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#2b1b17",
-  "theme_color": "#2b1b17",
+  "background_color": "#f1f5fb",
+  "theme_color": "#1e3a8a",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

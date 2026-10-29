@@ -3,383 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Jeu TOEIC - Ultimate Masterclass Edition (Mr. Gipson)</title>
-    <meta name="theme-color" content="#2b1b17">
-    <meta name="description" content="Entraînement TOEIC Partie 5, en mode western.">
+    <title>Part 5 Trainer · TOEIC Reading</title>
+    <meta name="theme-color" content="#1e3a8a">
+    <meta name="description" content="Part 5 Trainer : entraînement TOEIC Reading, Incomplete Sentences.">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icon-192.png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="TOEIC Gipson">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Part 5 Trainer">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <script src="confetti.browser.js"></script>
     <style>
 @font-face{font-family:'Nunito';font-style:normal;font-weight:400;font-display:swap;src:url('nunito-latin-400-normal.woff2') format('woff2')}
 @font-face{font-family:'Nunito';font-style:normal;font-weight:700;font-display:swap;src:url('nunito-latin-700-normal.woff2') format('woff2')}
 @font-face{font-family:'Nunito';font-style:normal;font-weight:900;font-display:swap;src:url('nunito-latin-900-normal.woff2') format('woff2')}
-@font-face{font-family:'Rye';font-style:normal;font-weight:400;font-display:swap;src:url('rye-latin-400-normal.woff2') format('woff2')}
-        body {
-            font-family: 'Nunito', sans-serif;
-            background: linear-gradient(135deg, #2b1b17 0%, #4a2e2b 100%);
-            color: #f5deb3; 
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-x: hidden;
-        }
-        
-        .game-container {
-            background: rgba(25, 15, 10, 0.6);
-            backdrop-filter: blur(10px);
-            border-radius: 10px;
-            padding: 30px;
-            width: 100%;
-            max-width: 800px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            border: 2px solid #8b4513; 
-            position: relative;
-            z-index: 2;
-        }
-
-        .game-container::before {
-            content: '';
-            position: absolute;
-            top: 5px; left: 5px; right: 5px; bottom: 5px;
-            border: 1px dashed #d2b48c;
-            border-radius: 8px;
-            pointer-events: none;
-        }
-
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-2px, 0, 0); }
-            20%, 80% { transform: translate3d(4px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
-            40%, 60% { transform: translate3d(8px, 0, 0); }
-        }
-        .shake {
-            animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
-            border-color: #f44336;
-            box-shadow: 0 15px 35px rgba(244, 67, 54, 0.4);
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-            font-family: 'Rye', serif; 
-            color: #d2b48c;
-            letter-spacing: 1px;
-        }
-        
-        /* Nouveau style pour le chrono */
-        .timer {
-            font-size: 1.4rem;
-            color: #f5deb3;
-            background: rgba(0,0,0,0.4);
-            padding: 5px 15px;
-            border-radius: 8px;
-            border: 1px solid #8b4513;
-            transition: color 0.3s;
-        }
-        @keyframes pulseAlert {
-            0% { transform: scale(1); color: #ef5350; }
-            50% { transform: scale(1.1); color: #ff1744; text-shadow: 0 0 10px red; }
-            100% { transform: scale(1); color: #ef5350; }
-        }
-        .timer.alert {
-            animation: pulseAlert 1s infinite;
-            border-color: #ef5350;
-        }
-
-        .streak { color: #ff8c00; text-shadow: 0 0 10px rgba(255,140,0,0.5); }
-        
-        .progress-bar {
-            width: 100%;
-            height: 12px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 6px;
-            margin-bottom: 30px;
-            overflow: hidden;
-            border: 1px solid #8b4513;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #d2691e, #ff8c00);
-            width: 0%;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .question-text {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 30px;
-            text-align: center;
-            line-height: 1.5;
-            color: #fff8dc;
-        }
-        .question-text strong {
-            color: #ff8c00;
-            border-bottom: 2px dashed #ff8c00;
-        }
-        
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .option-btn {
-            background: #3e2723;
-            color: #f5deb3;
-            border: 2px solid #8b4513;
-            padding: 15px 20px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-            font-family: 'Nunito', sans-serif;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 3px 3px 0px #1a0f0a;
-        }
-        .option-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            background: #4e342e;
-            box-shadow: 5px 5px 0px #1a0f0a;
-        }
-        .option-btn:active:not(:disabled) {
-            transform: translateY(1px);
-            box-shadow: 1px 1px 0px #1a0f0a;
-        }
-        .option-btn:disabled { cursor: not-allowed; opacity: 0.9; }
-        
-        .correct {
-            background: #2e7d32 !important;
-            color: white !important;
-            border-color: #4caf50 !important;
-            box-shadow: 0 0 15px rgba(76, 175, 80, 0.5) !important;
-        }
-        .wrong {
-            background: #c62828 !important;
-            color: white !important;
-            border-color: #ef5350 !important;
-        }
-
-        .feedback-container {
-            display: none;
-            align-items: flex-start;
-            margin-top: 25px;
-            animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .feedback-container.show {
-            display: flex;
-        }
-        
-        .character-container {
-            width: 140px;
-            min-width: 140px;
-            margin-right: 25px;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
-            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .character-container svg {
-            width: 100%;
-            height: auto;
-        }
-
-        .feedback-bubble {
-            flex: 1;
-            background: rgba(43, 27, 23, 0.9);
-            border: 2px solid #d2b48c;
-            border-radius: 15px;
-            border-top-left-radius: 0;
-            padding: 20px;
-            position: relative;
-            box-shadow: 0 15px 25px rgba(0,0,0,0.4);
-            color: #f5deb3;
-        }
-        .feedback-bubble::before {
-            content: '';
-            position: absolute;
-            left: -18px;
-            top: -2px;
-            border-style: solid;
-            border-width: 0 18px 22px 0;
-            border-color: transparent #d2b48c transparent transparent;
-        }
-        .feedback-bubble::after {
-            content: '';
-            position: absolute;
-            left: -14px;
-            top: 0;
-            border-style: solid;
-            border-width: 0 15px 18px 0;
-            border-color: transparent #2b1b17 transparent transparent;
-        }
-
-        .feedback-header {
-            font-size: 1.3rem;
-            font-weight: 900;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed #8b4513;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: 'Rye', serif;
-        }
-
-        .feedback-rule-badge {
-            background: #8b4513;
-            color: #f5deb3;
-            font-size: 0.8rem;
-            padding: 4px 10px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-family: 'Nunito', sans-serif;
-            border: 1px solid #d2b48c;
-        }
-        
-        .feedback-exp {
-            font-size: 1.05rem;
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-        
-        .toeic-tip, .toeic-shortcut {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            position: relative;
-            background: rgba(0,0,0,0.2);
-        }
-        
-        .toeic-tip {
-            border-left: 4px solid #ffd700;
-        }
-        
-        .toeic-shortcut {
-            border-left: 4px solid #ff4500;
-        }
-
-        .tip-title { font-weight: 900; color: #ffd700; margin-bottom: 5px; display: block; letter-spacing: 0.5px; }
-        .shortcut-title { font-weight: 900; color: #ff4500; margin-bottom: 5px; display: block; letter-spacing: 0.5px;}
-
-        .next-btn {
-            width: 100%;
-            padding: 18px;
-            margin-top: 20px;
-            background: #8b4513;
-            color: #f5deb3;
-            border: 2px solid #d2b48c;
-            border-radius: 8px;
-            font-size: 1.3rem;
-            cursor: pointer;
-            font-family: 'Rye', serif;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 4px 4px 0px #1a0f0a;
-        }
-        .next-btn:hover { 
-            background: #a0522d;
-            transform: translateY(-2px);
-            box-shadow: 6px 6px 0px #1a0f0a;
-        }
-        .next-btn:active {
-            transform: translateY(2px);
-            box-shadow: 2px 2px 0px #1a0f0a;
-        }
-        
-        .end-screen { text-align: center; display: none; }
-        .end-screen h1 { font-family: 'Rye', serif; font-size: 3.5rem; margin-bottom: 10px; color: #ff8c00; }
-        .end-screen p { font-size: 1.3rem; margin-bottom: 30px; }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes popIn {
-            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
-            70% { transform: scale(1.1) rotate(5deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0); }
-        }
-        
-        @media (max-width: 600px) {
-            .options-grid { grid-template-columns: 1fr; }
-            .feedback-container {
-                flex-direction: column;
-                align-items: center;
-                margin-top: 15px;
-            }
-            .character-container {
-                width: 110px;
-                min-width: 110px;
-                margin-right: 0;
-                margin-bottom: -15px;
-                z-index: 10;
-            }
-            .feedback-bubble {
-                width: 100%;
-                border-top-left-radius: 15px;
-                box-sizing: border-box;
-            }
-            .feedback-bubble::before, .feedback-bubble::after { display: none; }
-            .header { justify-content: center; }
-        }
-
-        /* ===== v3 : améliorations visuelles ===== */
-        body{min-height:100vh;min-height:100dvh;padding:max(20px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));-webkit-tap-highlight-color:transparent}
-        .time-bar{height:10px;margin:-14px 0 24px;background:rgba(0,0,0,.45);border:1px solid #8b4513;border-radius:6px;overflow:hidden}
-        .time-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ffb347,#ff8c00);border-radius:5px;transition:width 1s linear}
-        .question-text{position:relative;margin:0 0 28px;padding:44px 24px 26px;color:#3a2414;font-size:1.45rem;font-weight:800;line-height:1.55;background:radial-gradient(ellipse at center,#f6e7bf 40%,#e2c88f 100%);border:3px double #7a4520;border-radius:6px;box-shadow:inset 0 0 36px rgba(122,69,32,.38),0 8px 18px rgba(0,0,0,.5);transform:rotate(-.4deg)}
-        .question-text::before{content:"★ WANTED : THE RIGHT WORD ★";position:absolute;top:12px;left:0;right:0;font:400 .8rem/1 'Rye',serif;letter-spacing:.14em;color:#8b1a1a}
-        .question-text strong{color:#8b1a1a;border-bottom:3px solid #8b1a1a;padding:0 .5em;letter-spacing:.1em}
-        .option-btn{display:flex;align-items:center;gap:12px;min-height:58px;touch-action:manipulation}
-        .option-btn:not(.correct):not(.wrong){background:linear-gradient(180deg,#8a5230,#6b3d1f);color:#fff3d6;border-color:#3d210e;box-shadow:0 4px 0 #2a1608,0 6px 10px rgba(0,0,0,.4);text-shadow:0 1px 1px rgba(0,0,0,.5)}
-        .option-btn:not(.correct):not(.wrong):hover:not(:disabled){filter:brightness(1.12)}
-        .option-btn:active:not(:disabled){transform:translateY(3px)}
-        .option-btn .key{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#f1e0b5;color:#3a2414;font:400 .9rem 'Rye',serif;text-shadow:none}
-        .next-btn{min-height:52px;touch-action:manipulation}
-        .end-screen .best{font-size:1.1rem;margin:-10px 0 20px;color:#ffd700}
-        @media (max-width:600px){.question-text{font-size:1.25rem;padding:40px 16px 22px}}
-        @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-    </style>
+:root{--navy:#1e3a8a;--blue:#2563eb;--ink:#0f172a;--bg:#f1f5fb;--card:#fff;--line:#d7e0ef;--muted:#64748b;--amber:#f59e0b;--ok:#15803d;--okbg:#dcfce7;--ko:#b42318;--kobg:#fee4e2}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;min-height:100dvh;background:var(--bg);color:var(--ink);font:16px/1.55 'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));-webkit-tap-highlight-color:transparent}
+.app{max-width:760px;margin:0 auto}
+.screen{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 10px 30px rgba(30,58,138,.08)}
+h1{margin:0;font-weight:900;letter-spacing:-.02em;color:var(--navy)}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}.brand b{display:block;font-size:1.15rem;color:var(--navy);line-height:1.1}.brand small{color:var(--muted);font-size:.85rem}
+.hero{display:grid;grid-template-columns:1fr 200px;gap:24px;align-items:center}
+.hero h1{font-size:clamp(1.9rem,6vw,2.7rem);line-height:1.08}.hero h1 span{color:var(--blue)}
+.hero p{color:#334155;margin:12px 0 20px}
+.coach{margin:0;text-align:center}
+.coach-avatar{width:180px;height:180px;margin:0 auto 8px;border-radius:50%;background:radial-gradient(circle at 50% 30%,#eaf1ff,#bcd2ff);overflow:hidden;border:4px solid #fff;box-shadow:0 8px 20px rgba(30,58,138,.18)}
+.coach-avatar svg{display:block;width:100%;height:100%}
+.coach figcaption b{display:block;color:var(--navy)}.coach figcaption small{color:var(--muted)}
+.home-start{display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:14px 28px;border:0;border-radius:14px;background:var(--navy);color:#fff;font:800 1.1rem 'Nunito',sans-serif;box-shadow:0 6px 0 #14286b;cursor:pointer;touch-action:manipulation}
+.home-start:active{transform:translateY(4px);box-shadow:0 2px 0 #14286b}
+.home-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.home-btn{min-height:44px;padding:8px 16px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--navy);font:700 .95rem 'Nunito',sans-serif;cursor:pointer;touch-action:manipulation}
+.home-btn:hover{border-color:var(--blue)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}
+.stats div{padding:12px;border-radius:14px;background:var(--bg);text-align:center}.stats small{display:block;color:var(--muted);font-size:.8rem}.stats b{font-size:1.4rem;color:var(--navy)}
+.how-box{margin-top:16px;padding:14px 18px;background:#eef4ff;border-radius:14px}.how-box p{margin:6px 0}
+.legal{margin:18px 0 0;font-size:.75rem;color:var(--muted);text-align:center}
+@media(max-width:560px){.hero{grid-template-columns:1fr}.coach{order:-1}.coach-avatar{width:140px;height:140px}}
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.menu-btn{width:40px;height:40px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--muted);font-size:1.1rem;cursor:pointer;touch-action:manipulation}
+.crumb{flex:1;color:var(--muted);font-size:.9rem}.crumb b{color:var(--navy);margin-right:6px;letter-spacing:.06em}
+.header{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.chip{padding:7px 4px;border-radius:12px;background:var(--bg);text-align:center;line-height:1.2}.chip small{display:block;color:var(--muted);font-size:.72rem;font-weight:700}.chip b{font-size:1.05rem;color:var(--navy)}
+.timer.alert{background:#fff4d6}.timer.alert b{color:#92400e}
+.progress-bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}.progress-fill{height:100%;width:0;background:var(--navy);transition:width .3s}
+.time-bar{height:6px;margin:6px 0 18px;background:var(--line);border-radius:3px;overflow:hidden}.time-bar i{display:block;height:100%;width:100%;background:var(--amber);transition:width 1s linear}
+.directions{margin:0 0 16px;padding:8px 12px;border-left:4px solid var(--blue);background:#eef4ff;color:#334155;font-size:.9rem;border-radius:0 10px 10px 0}
+.qrow{display:flex;gap:12px;align-items:baseline;margin-bottom:18px}
+.qno{flex:none;font:700 1.25rem Georgia,'Times New Roman',serif;color:var(--navy)}
+.question-text{font:500 1.35rem/1.6 Georgia,'Times New Roman',serif}
+.question-text strong{color:var(--navy);letter-spacing:.08em;background:#e4edff;padding:0 .4em;border-radius:6px}
+.options-grid{display:grid;gap:10px}
+.option-btn{display:flex;align-items:center;gap:14px;width:100%;min-height:58px;padding:10px 14px;text-align:left;background:#fff;border:2px solid var(--line);border-radius:14px;color:var(--ink);font:600 1.08rem 'Nunito',sans-serif;cursor:pointer;touch-action:manipulation}
+.option-btn:hover:not(:disabled){border-color:var(--blue);background:#f5f9ff}
+.option-btn:active:not(:disabled){transform:scale(.99)}
+.option-btn .key{flex:none;display:grid;place-items:center;width:34px;height:34px;border:2px solid var(--navy);border-radius:50%;color:var(--navy);font:800 .95rem 'Nunito',sans-serif;background:#fff}
+.option-btn:disabled{cursor:default}.option-btn:disabled:not(.correct):not(.wrong){opacity:.55}
+.option-btn.correct{border-color:var(--ok);background:var(--okbg)}.option-btn.correct .key{background:var(--ok);border-color:var(--ok);color:#fff}
+.option-btn.wrong{border-color:var(--ko);background:var(--kobg)}.option-btn.wrong .key{background:var(--ko);border-color:var(--ko);color:#fff}
+.feedback-container{display:none;gap:14px;margin-top:18px;padding:16px;border-radius:16px;background:#f8fafc;border:1px solid var(--line);align-items:flex-start;animation:rise .3s ease}
+.feedback-container.show{display:flex}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.character-container{flex:none;width:76px;height:76px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 30%,#eaf1ff,#bcd2ff);border:3px solid #fff;box-shadow:0 4px 10px rgba(30,58,138,.18)}
+.character-container svg{display:block;width:100%;height:100%}
+.feedback-bubble{flex:1;min-width:0}
+.feedback-header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+#feedback-title{font-weight:900;font-size:1.1rem}
+.feedback-rule-badge{padding:2px 10px;border:1.5px solid;border-radius:999px;font-size:.78rem;font-weight:800;color:#1f2937}
+.feedback-exp{margin:6px 0 10px}.feedback-exp strong{display:block;color:var(--navy);margin-bottom:4px}
+.toeic-tip,.toeic-shortcut{margin:8px 0;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid var(--line);font-size:.95rem}
+.tip-title,.shortcut-title{display:block;font-size:.72rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+.shortcut-title{color:#92400e}.toeic-shortcut{background:#fffbeb;border-color:#fde68a}
+.next-btn{display:block;width:100%;min-height:52px;margin-top:12px;padding:12px;border:0;border-radius:14px;background:var(--navy);color:#fff;font:800 1.05rem 'Nunito',sans-serif;cursor:pointer;touch-action:manipulation;box-shadow:0 5px 0 #14286b}
+.next-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #14286b}
+mark{background:#fde68a;color:inherit;padding:0 3px;border-radius:4px}
+.clue-sentence{display:block;margin-bottom:6px;font:500 1.05rem/1.5 Georgia,'Times New Roman',serif}.fill{color:var(--ok);text-decoration:underline;text-underline-offset:3px}
+#end-panel{display:none;text-align:center}.end h1{font-size:1.9rem}
+.end .coach-avatar{width:150px;height:150px;margin:16px auto}
+.score-line{margin:4px 0;font-size:1.1rem;color:var(--muted)}.score-line strong{font-size:2.8rem;color:var(--navy)}
+.best{margin:0 0 8px;color:var(--muted);font-weight:700}
+.end #final-message{max-width:460px;margin:8px auto 18px}
+.review-box{margin:0 auto 20px;max-width:560px;padding:14px 18px;text-align:left;background:#f8fafc;border:1px solid var(--line);border-radius:14px}
+.review-box h3{margin:0 0 4px;color:var(--navy)}.rv-rules{margin:0 0 10px!important;font-size:.9rem!important;color:var(--muted)}
+.rv{margin:8px 0;line-height:1.45}.rv b{color:var(--ok)}.review-box .home-btn{margin-top:10px}
+.end .next-btn{max-width:420px;margin:12px auto 0}.end .home-btn{margin-top:12px}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}.shake{animation:shake .35s}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
 <body>
-
-<div class="game-container" id="game-panel">
+<div class="app">
+<section class="screen home" id="home-panel">
+    <div class="brand">
+        <svg viewBox="0 0 64 64" width="46" height="46" role="img" aria-label="Part 5 Trainer logo"><rect width="64" height="64" rx="15" fill="#1e3a8a"/><rect x="9" y="9" width="46" height="46" rx="8" fill="#fff"/><g fill="none" stroke="#1e3a8a" stroke-width="2.2"><circle cx="19" cy="21" r="3.8"/><circle cx="29" cy="21" r="3.8"/><circle cx="39" cy="21" r="3.8"/><circle cx="49" cy="21" r="3.8"/><circle cx="19" cy="32" r="3.8"/><circle cx="29" cy="32" r="3.8"/><circle cx="39" cy="32" r="3.8"/><circle cx="49" cy="32" r="3.8"/><circle cx="19" cy="43" r="3.8"/><circle cx="29" cy="43" r="3.8"/><circle cx="39" cy="43" r="3.8"/><circle cx="49" cy="43" r="3.8"/></g><circle cx="29" cy="21" r="3.8" fill="#1e3a8a"/><circle cx="39" cy="32" r="3.8" fill="#f59e0b" stroke="#f59e0b"/><circle cx="19" cy="43" r="3.8" fill="#1e3a8a"/></svg>
+        <div><b>Part 5 Trainer</b><small>TOEIC® Reading · Incomplete Sentences</small></div>
+    </div>
+    <div class="hero">
+        <div>
+            <h1>Find the missing word.<br><span>Before the clock does.</span></h1>
+            <p>Train on the exact format of TOEIC Part 5: 30 questions, 30 seconds each, clear explanations and a coach who goes through every mistake with you.</p>
+            <button class="home-start" onclick="showGame()">Start practice <span aria-hidden="true">→</span></button>
+            <div class="home-actions">
+                <button class="home-btn" onclick="toggleHow()" aria-expanded="false" id="how-btn">How it works</button>
+                <button class="home-btn" onclick="resetBest()">Reset progress</button>
+            </div>
+        </div>
+        <figure class="coach"><div class="coach-avatar" id="home-character"></div><figcaption><b>Mr. Gipson</b><small>Your grammar coach</small></figcaption></figure>
+    </div>
+    <div class="stats">
+        <div><small>Best score</small><b id="st-best">–</b></div>
+        <div><small>Rounds played</small><b id="st-rounds">0</b></div>
+        <div><small>Accuracy</small><b id="st-acc">–</b></div>
+    </div>
+    <div class="how-box" id="how-box" hidden>
+        <p>📝 <b>30 questions</b> per round, numbered like the real test (101 to 130).</p>
+        <p>⏱ <b>30 seconds</b> per question: spot the clue words around the blank first.</p>
+        <p>🎯 Each correct answer is worth <b>10 points</b> (300 per round).</p>
+        <p>🧠 <b>600+ questions</b>: the ones you miss come back more often.</p>
+        <p>🔁 After each round, replay only your mistakes.</p>
+        <p>⌨️ On a keyboard, press <b>A–D</b> or <b>1–4</b> to answer, <b>Enter</b> to continue.</p>
+    </div>
+    <p class="legal">Unofficial practice tool. TOEIC® is a registered trademark of ETS, which is not affiliated with this app.</p>
+</section>
+<section class="screen game" id="game-panel">
+    <div class="topbar">
+        <button class="menu-btn" onclick="confirmQuit()" aria-label="Quit this round">✕</button>
+        <div class="crumb"><b>PART 5</b>Incomplete Sentences</div>
+    </div>
     <div class="header">
-        <div>Bounty: $<span id="score-display">0</span></div>
-        <div class="timer" id="timer-box">⏳ <span id="time-display">30</span>s</div>
-        <div class="streak">🔥 Lasso: <span id="streak-display">0</span></div>
-        <div>Round <span id="q-counter">1</span>/30</div>
+        <div class="chip"><small>Question</small><b><span id="q-counter">1</span>/<span id="q-total">30</span></b></div>
+        <div class="chip"><small>Score</small><b id="score-display">0</b></div>
+        <div class="chip"><small>Streak</small><b id="streak-display">0</b></div>
+        <div class="chip timer" id="timer-box"><small>Time</small><b><span id="time-display">30</span>s</b></div>
     </div>
-    
-    <div class="progress-bar">
-        <div class="progress-fill" id="progress"></div>
-    </div>
-
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
     <div class="time-bar" aria-hidden="true"><i id="time-fill"></i></div>
-    <div class="question-text" id="question-text">Loading the duel...</div>
-
+    <p class="directions">Directions: a word or phrase is missing in the sentence. Choose the best answer.</p>
+    <div class="qrow"><span class="qno" id="qno">101.</span><div class="question-text" id="question-text">Loading…</div></div>
     <div class="options-grid" id="options-container"></div>
-
     <div class="feedback-container" id="feedback-container" aria-live="polite">
         <div class="character-container" id="character-avatar"></div>
         <div class="feedback-bubble" id="feedback-bubble">
@@ -388,67 +152,42 @@
                 <span class="feedback-rule-badge" id="feedback-rule">Rule</span>
             </div>
             <div class="feedback-exp" id="feedback-exp"></div>
-            <div class="toeic-tip">
-                <span class="tip-title" id="tip-title-label">🌵 MR. GIPSON'S WISDOM</span>
-                <span id="feedback-tip-text"></span>
-            </div>
-            <div class="toeic-shortcut">
-                <span class="shortcut-title">🔫 QUICK DRAW REFLEX</span>
-                <span id="feedback-shortcut-text"></span>
-            </div>
-            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Ride On ➔</button>
+            <div class="toeic-tip"><span class="tip-title" id="tip-title-label">Coach’s tip</span><span id="feedback-tip-text"></span></div>
+            <div class="toeic-shortcut"><span class="shortcut-title">Golden rule</span><span id="feedback-shortcut-text"></span></div>
+            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next question →</button>
         </div>
     </div>
-</div>
-
-<div class="game-container end-screen" id="end-panel">
-    <h1>Duel Over!</h1>
-    <p>Your Bounty: $<strong id="final-score">0</strong> (out of 30)</p>
+</section>
+<section class="screen end" id="end-panel">
+    <h1>Round complete</h1>
+    <div class="coach-avatar" id="final-character"></div>
+    <p class="score-line">Your score <strong id="final-score">0</strong> / <span id="final-max">300</span></p>
     <p id="best-score" class="best"></p>
-    <div id="final-character" style="width: 180px; margin: 0 auto 20px auto;"></div>
     <p id="final-message"></p>
-    <button class="next-btn show" style="display:block;" onclick="startGame()">Saddle Up for Another Round</button>
+    <div class="review-box" id="review-box"></div>
+    <button class="next-btn" onclick="startGame()">Start another round</button>
+    <button class="home-btn" onclick="showHome()">Back to home</button>
+</section>
 </div>
-
 <script>
     // ================= 1. PERSONNAGES (SVG) =================
-    const happyGipson = `
-    <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 10 40 Q 50 20 90 40 L 95 45 Q 50 30 5 45 Z" fill="#5D4037"/>
-        <path d="M 25 35 C 25 15, 75 15, 75 35" fill="#4E342E"/>
-        <circle cx="50" cy="60" r="25" fill="#FFCC80"/>
-        <path d="M 30 75 L 50 95 L 70 75 Z" fill="#D32F2F"/>
-        <circle cx="50" cy="80" r="3" fill="#B71C1C"/>
-        <circle cx="45" cy="85" r="2" fill="#B71C1C"/>
-        <circle cx="55" cy="85" r="2" fill="#B71C1C"/>
-        <rect x="33" y="52" width="14" height="8" rx="2" fill="#212121"/>
-        <rect x="53" y="52" width="14" height="8" rx="2" fill="#212121"/>
-        <line x1="47" y1="56" x2="53" y2="56" stroke="#212121" stroke-width="2"/>
-        <path d="M 35 68 Q 50 62 65 68 Q 75 75 60 72 Q 50 75 40 72 Q 25 75 35 68 Z" fill="#3E2723"/>
-        <path d="M 15 42 Q 50 55 85 42 Q 95 38 100 45 Q 50 60 0 45 Q 5 38 15 42 Z" fill="#5D4037"/>
-        <path d="M 27 35 Q 50 40 73 35" fill="none" stroke="#3E2723" stroke-width="3"/>
-        <rect x="47" y="35" width="6" height="4" fill="#FFD700"/>
-    </svg>`;
+    function gipson(mood) {
+    const ok = mood === 'happy';
+    return '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mr. Gipson, your grammar coach">'
+    + '<path d="M18 200c0-34 30-52 82-52s82 18 82 52z" fill="#1e3a8a"/><path d="M76 150l24 40-30 10-14-36zM124 150l-24 40 30 10 14-36z" fill="#14286b"/><path d="M76 150l24 42 24-42z" fill="#fff"/>'
+    + '<path d="M94 163h12l5 36-11 8-11-8z" fill="#f59e0b"/><path d="M93 158h14l-3 9h-8z" fill="#d97706"/><path d="M128 172l14-3 3 12-14 3z" fill="#fff"/>'
+    + '<path d="M85 118h30v36q-15 12-30 0z" fill="#e8b48c"/><circle cx="62" cy="92" r="9" fill="#e8b48c"/><circle cx="138" cy="92" r="9" fill="#e8b48c"/><ellipse cx="100" cy="88" rx="38" ry="44" fill="#f6cfa8"/>'
+    + '<path d="M61 86c-4-34 18-52 42-52 28 0 42 20 37 52-6-16-16-26-34-27-20-1-37 8-45 27z" fill="#2b2118"/>'
+    + '<g fill="rgba(255,255,255,.35)" stroke="#1f2937" stroke-width="3.5"><rect x="68" y="78" width="27" height="21" rx="8"/><rect x="105" y="78" width="27" height="21" rx="8"/><path d="M95 87h10" fill="none"/></g>'
+    + '<circle cx="81.5" cy="89" r="3.4" fill="#1f2937"/><circle cx="118.5" cy="89" r="3.4" fill="#1f2937"/>'
+    + '<path d="' + (ok ? 'M70 70q12-7 24-1M106 69q12-6 24 1' : 'M70 70q12-6 24-1M106 63q12-8 24 0') + '" fill="none" stroke="#2b2118" stroke-width="4" stroke-linecap="round"/>'
+    + '<path d="M100 93q-5 12 2 15" fill="none" stroke="#d29a6d" stroke-width="3" stroke-linecap="round"/>'
+    + (ok ? '<path d="M85 113q15 17 30 0z" fill="#fff" stroke="#7f1d1d" stroke-width="3" stroke-linejoin="round"/><ellipse cx="73" cy="108" rx="7" ry="4" fill="#f4a5a0" opacity=".55"/><ellipse cx="127" cy="108" rx="7" ry="4" fill="#f4a5a0" opacity=".55"/>'
+           : '<path d="M88 116q12 6 24 0" fill="none" stroke="#7f1d1d" stroke-width="3.5" stroke-linecap="round"/>')
+    + '</svg>';
+}
+const happyGipson = gipson('happy'), strictGipson = gipson('think');
 
-    const strictGipson = `
-    <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 10 40 Q 50 20 90 40 L 95 45 Q 50 30 5 45 Z" fill="#5D4037"/>
-        <path d="M 25 35 C 25 15, 75 15, 75 35" fill="#4E342E"/>
-        <circle cx="50" cy="60" r="25" fill="#FFB74D"/>
-        <path d="M 30 75 L 50 95 L 70 75 Z" fill="#D32F2F"/>
-        <line x1="30" y1="48" x2="45" y2="54" stroke="#3E2723" stroke-width="3" stroke-linecap="round"/>
-        <line x1="70" y1="48" x2="55" y2="54" stroke="#3E2723" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="38" cy="56" r="3" fill="#212121"/>
-        <circle cx="62" cy="56" r="3" fill="#212121"/>
-        <circle cx="38" cy="55" r="1" fill="#fff"/>
-        <circle cx="62" cy="55" r="1" fill="#fff"/>
-        <path d="M 32 70 Q 50 65 68 70 Q 70 80 60 76 Q 50 78 40 76 Q 30 80 32 70 Z" fill="#3E2723"/>
-        <circle cx="75" cy="65" r="2" fill="#9E9E9E" opacity="0.8"/>
-        <circle cx="78" cy="60" r="3" fill="#9E9E9E" opacity="0.6"/>
-        <circle cx="82" cy="53" r="4" fill="#9E9E9E" opacity="0.4"/>
-        <path d="M 15 45 Q 50 60 85 45 Q 95 40 100 48 Q 50 65 0 48 Q 5 40 15 45 Z" fill="#5D4037"/>
-        <path d="M 27 38 Q 50 45 73 38" fill="none" stroke="#3E2723" stroke-width="3"/>
-    </svg>`;
 
     // --- MOTEUR DE QUESTIONS ---
     // ================= 2. BANQUE DE QUESTIONS (générée) =================
@@ -489,7 +228,7 @@
                 rule: "Verbes Causatifs",
                 exp: `Le verbe causatif '${c.verb}' exige ${c.rule === 'base verbale' ? 'la base verbale (sans to)' : "l'infinitif complet ('to' + verbe)"} pour l'action qui suit.`,
                 tip: "HAVE et MAKE = pas de 'to'. GET, ALLOW, ASK, TELL = avec 'to'.",
-                shortcut: `Tu vois '${c.verb}' + quelqu'un + [trou] ? Tire sur '${c.act}' !`
+                shortcut: `Tu vois '${c.verb}' + quelqu'un + [trou] ? Choisis '${c.act}' !`
             }]);
         }
     });
@@ -536,14 +275,72 @@
         }
     });
 
-    // Remplissage rapide
-    let currentLen = dbQuestions.length;
-    while(dbQuestions.length < 300) {
-        let baseQ = dbQuestions[Math.floor(Math.random() * currentLen)];
-        let newQ = JSON.parse(JSON.stringify(baseQ));
-        newQ.q = newQ.q.replace("tomorrow", "next week").replace("yesterday", "recently");
-        dbQuestions.push(newQ);
-    }
+    // Banque TOEIC Partie 5 (indices clés)
+    addQuestions([{"grp":"bk-Préposition","div":"The marketing department has a","q":"The marketing department has asked all employees to submit their expense reports ______ the end of the month.","options":["by","during","since","among"],"correct":0,"rule":"Préposition","exp":"<span class=\"clue-sentence\">The marketing department has asked all employees to submit their expense reports <b class=\"fill\">by</b> <mark>the end of the month</mark>.</span><br>🔍 « the end of the month » = une date limite. Date limite → by.","tip":"Les autres choix : during → during  se construit avec une période qui dure, pas avec une échéance ponctuelle.  |  since → since  exige un point de départ dans le passé, ce que  the end of the month  n’est pas ici.  |  among → among  signifie  parmi  et s’emploie avec un groupe de personnes ou de choses.","shortcut":"by = échéance (au plus tard) ; during = pendant une période ; since = depuis un point de départ."},{"grp":"bk-Verbe","div":"The new software will ------- ","q":"The new software will ______ employees to track shipments in real time.","options":["enable","enabling","enabled","enablement"],"correct":0,"rule":"Verbe","exp":"<span class=\"clue-sentence\">The new software <mark>will</mark> <b class=\"fill\">enable</b> employees to track shipments in real time.</span><br>🔍 Juste avant le trou : « will ». Après will, le verbe reste tel quel (forme de base).","tip":"Les autres choix : enabling → Après  will , un verbe en -ing est impossible : il faut une forme de base.  |  enabled → enabled  est un participe passé ; après  will , il faut la forme de base.  |  enablement → enablement  est un nom ; ici le modal  will  attend un verbe.","shortcut":"will / can / must + verbe à la forme de base, jamais de -ing ni de -ed."},{"grp":"bk-Classe de mot","div":"Ms. Tanaka was ------- promote","q":"Ms. Tanaka was ______ promoted to regional director after exceeding sales targets for three years.","options":["recent","recently","more recent","recency"],"correct":1,"rule":"Classe de mot","exp":"<span class=\"clue-sentence\">Ms. Tanaka <mark>was</mark> <b class=\"fill\">recently</b> <mark>promoted</mark> to regional director after exceeding sales targets for three years.</span><br>🔍 Le trou est entre « was » et « promoted » (un verbe). Un mot qui décrit un verbe = adverbe (souvent en -ly).","tip":"Les autres choix : recent → Un adverbe se place entre  was  et le participe : recently promoted.  |  more recent → more recent  est un adjectif comparatif, il ne qualifie pas un verbe.  |  recency → recency  est un nom, impossible entre  was  et un participe.","shortcut":"Pour modifier un verbe ou un participe, il faut un adverbe (souvent en -ly)."},{"grp":"bk-Préposition ou conjonction","div":"------- the heavy rain, the ou","q":"______ the heavy rain, the outdoor product launch went ahead as planned.","options":["Although","Despite","However","Because"],"correct":1,"rule":"Préposition ou conjonction","exp":"<span class=\"clue-sentence\"><b class=\"fill\">Despite</b> <mark>the heavy rain</mark>, the outdoor product launch went ahead as planned.</span><br>🔍 Après le trou : « the heavy rain » = juste un nom, pas de verbe. Nom seul → préposition (Despite).","tip":"Les autres choix : Although → Despite  est une préposition suivie d’un groupe nominal (the heavy rain).  |  However → However  est un adverbe de liaison, il ne s’emploie pas devant un groupe nominal.  |  Because → Because  introduit une proposition et exprime la cause, pas l’opposition.","shortcut":"Despite + nom ; although + sujet + verbe."},{"grp":"bk-Voix passive","div":"The quarterly report must be r","q":"The quarterly report must be reviewed by the finance team before it ______ to shareholders.","options":["sends","is sent","sending","has sent"],"correct":1,"rule":"Voix passive","exp":"<span class=\"clue-sentence\"><mark>The quarterly report</mark> must be reviewed by the finance team <mark>before it</mark> <b class=\"fill\">is sent</b> to shareholders.</span><br>🔍 Le sujet est « The quarterly report » : une chose. Elle ne peut pas envoyer, elle est envoyée → passif (is + participe passé).","tip":"Les autres choix : sends → Le rapport est envoyé : voix passive, donc is sent.  |  sending → sending  seul n’est pas un verbe conjugué après  it .  |  has sent → has sent  est actif et attend un complément d’objet que la phrase n’a pas.","shortcut":"Sujet = chose qui subit l’action → be + participe passé."},{"grp":"bk-Pronom","div":"All visitors must wear -------","q":"All visitors must wear ______ identification badges at all times.","options":["they","them","their","theirs"],"correct":2,"rule":"Pronom","exp":"<span class=\"clue-sentence\">All visitors must wear <b class=\"fill\">their</b> <mark>identification badges</mark> at all times.</span><br>🔍 Après le trou : « identification badges » = un nom. Devant un nom → possessif (their).","tip":"Les autres choix : they → their  est un adjectif possessif placé devant un nom.  |  them → they  est un pronom sujet, impossible devant un nom.  |  theirs → theirs  est un pronom possessif : il remplace un nom, il ne le précède pas.","shortcut":"Devant un nom : adjectif possessif (my, your, his, her, its, our, their)."},{"grp":"bk-Classe de mot","div":"Mr. Park is ------- for coordi","q":"Mr. Park is ______ for coordinating the training sessions for new hires.","options":["responsible","responsibly","responsibility","responsibilities"],"correct":0,"rule":"Classe de mot","exp":"<span class=\"clue-sentence\"><mark>Mr. Park is</mark> <b class=\"fill\">responsible</b> for coordinating the training sessions for new hires.</span><br>🔍 Après « is », on décrit Mr. Park : il faut un adjectif. « responsible for » = responsable de.","tip":"Les autres choix : responsibly → responsibly  est un adverbe, il ne peut pas être attribut du sujet.  |  responsibility → responsibility  est un nom ;  is responsibility for  est impossible.  |  responsibilities → responsibilities  est un nom pluriel, qui ne s’accorde ni avec  Mr. Park  ni avec  for .","shortcut":"be + adjectif ; l’adjectif « responsible » se construit avec « for »."},{"grp":"bk-Préposition ou conjonction","div":"------- the contract was signe","q":"______ the contract was signed late, the shipment arrived on schedule.","options":["Even though","Nevertheless","Therefore","Due to"],"correct":0,"rule":"Préposition ou conjonction","exp":"<span class=\"clue-sentence\"><b class=\"fill\">Even though</b> <mark>the contract was signed late</mark>, <mark>the shipment arrived</mark> on schedule.</span><br>🔍 Après le trou : une phrase complète (sujet + verbe), et les deux idées s’opposent (retard / à l’heure) → Even though.","tip":"Les autres choix : Nevertheless → Nevertheless  est un adverbe de liaison, il ne relie pas deux propositions dans une seule phrase.  |  Therefore → Therefore  exprime la conséquence, pas l’opposition.  |  Due to → Due to  est une préposition ; elle ne peut pas introduire  the contract was signed .","shortcut":"Conjonction (even though, although) + sujet + verbe ; adverbe de liaison séparé par une virgule ou un point."},{"grp":"bk-Classe de mot","div":"The company offers a ------- b","q":"The company offers a ______ benefits package, including health insurance and paid leave.","options":["comprehensive","comprehend","comprehensively","comprehension"],"correct":0,"rule":"Classe de mot","exp":"<span class=\"clue-sentence\">The company offers a <b class=\"fill\">comprehensive</b> <mark>benefits package</mark>, including health insurance and paid leave.</span><br>🔍 Le trou est juste avant un nom (« benefits package »). Mot placé devant un nom = adjectif : comprehensive.","tip":"Les autres choix : comprehend → comprehend  est un verbe et ne peut pas qualifier un nom.  |  comprehensively → comprehensively  est un adverbe ; il ne qualifie pas un nom.  |  comprehension → comprehension  est un nom (compréhension) et n’a pas le sens voulu.","shortcut":"Entre l’article et le nom, cherche l’adjectif."},{"grp":"bk-Temps","div":"By the time the auditors arriv","q":"By the time the auditors arrive next week, we ______ all the invoices.","options":["finish","finished","will have finished","are finishing"],"correct":2,"rule":"Temps","exp":"<span class=\"clue-sentence\"><mark>By the time</mark> the auditors arrive <mark>next week</mark>, we <b class=\"fill\">will have finished</b> all the invoices.</span><br>🔍 « By the time » + « next week » = terminé avant un moment futur → will have + participe passé.","tip":"Les autres choix : finish → By the time  + présent futur : on emploie le futur antérieur, will have finished.  |  finished → Le présent simple ne marque pas une action achevée avant un moment futur.  |  are finishing → Le présent continu décrit une action en cours, pas achevée avant l’arrivée des auditeurs.","shortcut":"By + moment futur → futur antérieur (will have + participe passé)."},{"grp":"bk-Préposition","div":"The conference will take place","q":"The conference will take place ______ Tuesday, March 14.","options":["in","at","on","by"],"correct":2,"rule":"Préposition","exp":"<span class=\"clue-sentence\">The conference will take place <b class=\"fill\">on</b> <mark>Tuesday, March 14</mark>.</span><br>🔍 Après le trou : un jour + une date. Jour ou date précise → on.","tip":"Les autres choix : in → On emploie  on  devant un jour ou une date précise.  |  at → in  s’emploie avec un mois, une année ou une saison, pas avec un jour précis.  |  by → by  marque une échéance, pas la date d’un événement.","shortcut":"on + jour/date ; in + mois/année ; at + heure."},{"grp":"bk-Verbe","div":"Please ------- the attached fo","q":"Please ______ the attached form and return it to the HR department by Friday.","options":["complete","completion","completely","completed"],"correct":0,"rule":"Verbe","exp":"<span class=\"clue-sentence\"><mark>Please</mark> <b class=\"fill\">complete</b> <mark>the attached form</mark> and return it to the HR department by Friday.</span><br>🔍 « Please » au début = un ordre poli. Après Please, le verbe est tel quel (forme de base).","tip":"Les autres choix : completion → completion  est un nom, il ne peut pas être le verbe de la phrase.  |  completely → completely  est un adverbe, il ne peut pas être le verbe.  |  completed → completed  est un participe passé, il ne convient pas pour un ordre.","shortcut":"Please + verbe à la forme de base."},{"grp":"bk-Conjonction","div":"Neither the director ------- t","q":"Neither the director ______ the assistants were aware of the schedule change.","options":["or","nor","and","but"],"correct":1,"rule":"Conjonction","exp":"<span class=\"clue-sentence\"><mark>Neither</mark> the director <b class=\"fill\">nor</b> the assistants were aware of the schedule change.</span><br>🔍 « Neither » au début de la phrase appelle toujours son partenaire : nor.","tip":"Les autres choix : or → neither  forme un couple fixe avec  nor .  |  and → and  ne s’associe pas à  neither  dans cette structure.  |  but → but  exprime un contraste, ce qui n’est pas le cas ici.","shortcut":"either … or ; neither … nor ; both … and ; not only … but also."},{"grp":"bk-Pronom","div":"The new policy applies to ----","q":"The new policy applies to ______ who have worked at the company for over a year.","options":["whose","those","them","which"],"correct":1,"rule":"Pronom","exp":"<span class=\"clue-sentence\">The new policy applies to <b class=\"fill\">those</b> <mark>who have worked</mark> at the company for over a year.</span><br>🔍 Après le trou : « who have worked ». « those who » = les personnes qui.","tip":"Les autres choix : whose → those who  signifie  les personnes qui  et introduit la proposition relative.  |  them → them  ne peut pas être suivi de  who  dans ce sens.  |  which → which  ne s’emploie pas pour des personnes.","shortcut":"those who = les personnes qui."},{"grp":"bk-Classe de mot","div":"Sales have increased ------- s","q":"Sales have increased ______ since the new advertising campaign began.","options":["steady","steadily","steadiness","steadier"],"correct":1,"rule":"Classe de mot","exp":"<span class=\"clue-sentence\">Sales <mark>have increased</mark> <b class=\"fill\">steadily</b> since the new advertising campaign began.</span><br>🔍 Le trou est juste après le verbe « have increased ». Un mot qui dit comment le verbe se passe = adverbe (-ly).","tip":"Les autres choix : steady → Un adverbe modifie le verbe  have increased  : steadily.  |  steadiness → steadiness  est un nom : impossible après  increased .  |  steadier → steadier  est un comparatif, sans  than  ni contexte de comparaison.","shortcut":"Verbe + adverbe de manière (-ly)."},{"grp":"bk-Temps","div":"Ms. Lee ------- the budget pro","q":"Ms. Lee ______ the budget proposal to the board yesterday.","options":["presents","presented","presenting","will present"],"correct":1,"rule":"Temps","exp":"<span class=\"clue-sentence\">Ms. Lee <b class=\"fill\">presented</b> the budget proposal to the board <mark>yesterday</mark>.</span><br>🔍 « yesterday » = hier, donc le passé : presented.","tip":"Les autres choix : presents → yesterday  impose le prétérit : presented.  |  presenting → presenting  seul n’est pas un verbe conjugué.  |  will present → Le futur est incompatible avec  yesterday .","shortcut":"Repère temporel passé (yesterday, last week, ago) → prétérit."},{"grp":"bk-Classe de mot","div":"The ------- of the new branch ","q":"The ______ of the new branch will create over fifty jobs.","options":["open","opening","openly","opened"],"correct":1,"rule":"Classe de mot","exp":"<span class=\"clue-sentence\"><mark>The</mark> <b class=\"fill\">opening</b> <mark>of the new branch</mark> will create over fifty jobs.</span><br>🔍 Entre « The » et « of » il faut un nom : opening (ouverture).","tip":"Les autres choix : open → open  n’est pas le nom attendu ici.  |  openly → Adverbe : impossible après  The .  |  opened → Participe : ce n’est pas un nom.","shortcut":"The + ____ + of → un nom."},{"grp":"bk-Vocabulaire","div":"Employees are encouraged to ta","q":"Employees are encouraged to take ______ of the free language courses.","options":["advantage","advantages","advantaged","advantageous"],"correct":0,"rule":"Vocabulaire","exp":"<span class=\"clue-sentence\">Employees are encouraged to <mark>take</mark> <b class=\"fill\">advantage</b> <mark>of the free</mark> language courses.</span><br>🔍 Expression fixe : take advantage of = profiter de.","tip":"Les autres choix : advantages → Cette expression ne prend pas de pluriel.  |  advantaged → Participe : ne convient pas.  |  advantageous → Adjectif : ne convient pas.","shortcut":"take advantage of (fixe, singulier)."},{"grp":"bk-Classe de mot","div":"The CEO delivered a ------- sp","q":"The CEO delivered a ______ speech that motivated the entire staff.","options":["inspire","inspiring","inspiringly","inspiration"],"correct":1,"rule":"Classe de mot","exp":"<span class=\"clue-sentence\">The CEO delivered <mark>a</mark> <b class=\"fill\">inspiring</b> <mark>speech</mark> that motivated the entire staff.</span><br>🔍 Entre « a » et le nom « speech » : adjectif → inspiring.","tip":"Les autres choix : inspire → Verbe : impossible devant un nom.  |  inspiringly → Adverbe : ne qualifie pas un nom.  |  inspiration → Nom : deux noms de suite ne conviennent pas ici.","shortcut":"Article + ____ + nom → adjectif."},{"grp":"bk-Temps","div":"We will notify you as soon as ","q":"We will notify you as soon as your order ______.","options":["ships","will ship","would ship","shipping"],"correct":0,"rule":"Temps","exp":"<span class=\"clue-sentence\">We <mark>will notify</mark> you <mark>as soon as</mark> your order <b class=\"fill\">ships</b>.</span><br>🔍 Après « as soon as », le futur s’exprime au présent simple.","tip":"Les autres choix : will ship → Pas de  will  après as soon as.  |  would ship → would  est incorrect ici.  |  shipping → shipping  n’est pas conjugué.","shortcut":"as soon as / when / before + présent (jamais will)."},{"grp":"bk-Pronom","div":"Ms. Alvarez asked ------- assi","q":"Ms. Alvarez asked ______ assistant to reschedule the meeting.","options":["she","her","hers","herself"],"correct":1,"rule":"Pronom","exp":"<span class=\"clue-sentence\">Ms. Alvarez asked <b class=\"fill\">her</b> <mark>assistant</mark> to reschedule the meeting.</span><br>🔍 Devant le nom « assistant » : possessif → her.","tip":"Les autres choix : she → Pronom sujet : impossible devant un nom.  |  hers → Remplace un nom, ne le précède pas.  |  herself → Réfléchi : ne convient pas.","shortcut":"Devant un nom → my, your, his, her, its, our, their."},{"grp":"bk-Préposition ou conjonction","div":"The proposal was rejected ----","q":"The proposal was rejected ______ it exceeded the budget.","options":["because","because of","despite","so"],"correct":0,"rule":"Préposition ou conjonction","exp":"<span class=\"clue-sentence\">The proposal was rejected <b class=\"fill\">because</b> <mark>it exceeded the budget</mark>.</span><br>🔍 Après le trou : sujet + verbe, et c’est une cause → because.","tip":"Les autres choix : because of → because of  + nom seulement.  |  despite → despite  exprime l’opposition + nom.  |  so → so  exprime la conséquence.","shortcut":"because + sujet + verbe ; because of + nom."},{"grp":"bk-Préposition","div":"Mr. Dubois has worked at the f","q":"Mr. Dubois has worked at the firm ______ 2015.","options":["for","since","during","while"],"correct":1,"rule":"Préposition","exp":"<span class=\"clue-sentence\">Mr. Dubois <mark>has worked</mark> at the firm <b class=\"fill\">since</b> <mark>2015</mark>.</span><br>🔍 Une année précise = point de départ → since.","tip":"Les autres choix : for → for  + une durée (ten years).  |  during → during  + période, pas une année seule.  |  while → while  + sujet + verbe.","shortcut":"since + date ; for + durée."},{"grp":"bk-Temps","div":"The warehouse manager ------- ","q":"The warehouse manager ______ the shipment when the fire alarm rang.","options":["inspects","was inspecting","will inspect","has inspected"],"correct":1,"rule":"Temps","exp":"<span class=\"clue-sentence\">The warehouse manager <b class=\"fill\">was inspecting</b> the shipment <mark>when the fire alarm rang</mark>.</span><br>🔍 Action en cours au passé, interrompue par « rang » → was inspecting.","tip":"Les autres choix : inspects → Présent : incohérent avec  rang .  |  will inspect → Futur : incohérent.  |  has inspected → Parfait : ne montre pas l’action en cours.","shortcut":"Action longue interrompue au passé → was + -ing."},{"grp":"bk-Comparatif","div":"Our new laptop is ------- ligh","q":"Our new laptop is ______ lighter than the previous model.","options":["much","very","more","most"],"correct":0,"rule":"Comparatif","exp":"<span class=\"clue-sentence\">Our new laptop is <b class=\"fill\">much</b> <mark>lighter</mark> <mark>than</mark> the previous model.</span><br>🔍 « lighter than » est un comparatif : on le renforce avec much.","tip":"Les autres choix : very → very  ne renforce pas un comparatif.  |  more → more lighter  est impossible.  |  most → most  = superlatif.","shortcut":"much / far / even + comparatif ; very + adjectif simple."},{"grp":"bk-Classe de mot","div":"The client was ------- with th","q":"The client was ______ with the quality of the service.","options":["satisfy","satisfying","satisfied","satisfaction"],"correct":2,"rule":"Classe de mot","exp":"<span class=\"clue-sentence\">The client <mark>was</mark> <b class=\"fill\">satisfied</b> <mark>with the quality</mark> of the service.</span><br>🔍 « be satisfied with » = être satisfait de.","tip":"Les autres choix : satisfy → Verbe de base : impossible après was.  |  satisfying → -ing décrit ce qui satisfait, pas la personne.  |  satisfaction → Nom : ne convient pas après was.","shortcut":"Personne qui ressent → -ed ; chose qui provoque → -ing."},{"grp":"bk-Conjonction","div":"Applicants must submit a résum","q":"Applicants must submit a résumé ______ a cover letter.","options":["as well as","as soon as","even if","in case"],"correct":0,"rule":"Conjonction","exp":"<span class=\"clue-sentence\">Applicants must submit <mark>a résumé</mark> <b class=\"fill\">as well as</b> <mark>a cover letter</mark>.</span><br>🔍 On relie deux noms (CV + lettre) → as well as = ainsi que.","tip":"Les autres choix : as soon as → as soon as  = dès que + sujet + verbe.  |  even if → even if  + sujet + verbe.  |  in case → in case  + sujet + verbe.","shortcut":"as well as relie deux noms ou deux éléments équivalents."},{"grp":"bk-Pronom","div":"------- of the two candidates ","q":"______ of the two candidates has the required experience.","options":["Both","Neither","All","Several"],"correct":1,"rule":"Pronom","exp":"<span class=\"clue-sentence\"><b class=\"fill\">Neither</b> <mark>of the two</mark> candidates <mark>has</mark> the required experience.</span><br>🔍 « has » est singulier et « the two » = deux → Neither (aucun des deux).","tip":"Les autres choix : Both → Both  demande un verbe pluriel.  |  All → All  ne va pas avec deux.  |  Several → Several  = plus de deux.","shortcut":"Neither / Each / Either of the two + verbe singulier."},{"grp":"bk-Préposition","div":"The report must be completed -","q":"The report must be completed ______ Friday at the latest.","options":["by","until","during","at"],"correct":0,"rule":"Préposition","exp":"<span class=\"clue-sentence\">The report must be completed <b class=\"fill\">by</b> Friday <mark>at the latest</mark>.</span><br>🔍 « at the latest » = au plus tard → by.","tip":"Les autres choix : until → until  = jusqu’à, durée continue.  |  during → during  + période.  |  at → at  + heure.","shortcut":"by = au plus tard."},{"grp":"bk-Préposition ou conjonction","div":"Please keep your receipt -----","q":"Please keep your receipt ______ you need to return the item.","options":["in case","in spite of","as well as","owing to"],"correct":0,"rule":"Préposition ou conjonction","exp":"<span class=\"clue-sentence\">Please keep your receipt <b class=\"fill\">in case</b> <mark>you need to return</mark> the item.</span><br>🔍 Sujet + verbe après le trou, idée de précaution → in case.","tip":"Les autres choix : in spite of → in spite of  + nom.  |  as well as → as well as  relie des éléments.  |  owing to → owing to  + nom.","shortcut":"in case + sujet + verbe = au cas où."},{"grp":"bk-Classe de mot","div":"The factory has reduced its en","q":"The factory has reduced its energy ______ by 20 percent.","options":["consume","consumes","consumption","consumer"],"correct":2,"rule":"Classe de mot","exp":"<span class=\"clue-sentence\">The factory has reduced <mark>its energy</mark> <b class=\"fill\">consumption</b> <mark>by 20 percent</mark>.</span><br>🔍 « its energy ____ » : on attend le nom de la chose réduite → consumption.","tip":"Les autres choix : consume → Verbe : ne convient pas ici.  |  consumes → Verbe conjugué : ne convient pas.  |  consumer → consumer  = une personne.","shortcut":"Un possessif + nom + ____ : cherche le nom manquant."},{"grp":"bk-Comparatif / superlatif","div":"Ms. Chen is the ------- of the","q":"Ms. Chen is the ______ of the three candidates.","options":["more experienced","most experienced","experience","experienced more"],"correct":1,"rule":"Comparatif / superlatif","exp":"<span class=\"clue-sentence\">Ms. Chen is <mark>the</mark> <b class=\"fill\">most experienced</b> <mark>of the three</mark> candidates.</span><br>🔍 « of the three » (plus de deux) → superlatif : the most experienced.","tip":"Les autres choix : more experienced → Comparatif : seulement entre deux.  |  experience → Nom : ne convient pas.  |  experienced more → Ordre des mots incorrect.","shortcut":"Entre deux → more…than ; parmi trois ou plus → the most."},{"grp":"bk-Verbe","div":"The manager asked that all rep","q":"The manager asked that all reports ______ submitted by noon.","options":["are","be","were","being"],"correct":1,"rule":"Verbe","exp":"<span class=\"clue-sentence\">The manager <mark>asked that</mark> all reports <b class=\"fill\">be</b> submitted by noon.</span><br>🔍 Après « asked that », le verbe est à la forme de base : be submitted.","tip":"Les autres choix : are → Indicatif : incorrect après asked that.  |  were → Prétérit : incorrect.  |  being → -ing seul : incorrect.","shortcut":"ask / require / recommend that + base verbale."},{"grp":"bk-Temps","div":"If the shipment ------- on tim","q":"If the shipment ______ on time, we will avoid a penalty.","options":["arrive","arrives","arrived","will arrive"],"correct":1,"rule":"Temps","exp":"<span class=\"clue-sentence\"><mark>If</mark> the shipment <b class=\"fill\">arrives</b> on time, <mark>we will avoid</mark> a penalty.</span><br>🔍 If + présent, puis will + base : If the shipment arrives.","tip":"Les autres choix : arrive → Il manque le -s (shipment est singulier).  |  arrived → Passé : change le sens.  |  will arrive → Pas de  will  après If.","shortcut":"If + présent → will + base."},{"grp":"bk-Temps","div":"If I ------- you, I would acce","q":"If I ______ you, I would accept the offer.","options":["am","was","were","will be"],"correct":2,"rule":"Temps","exp":"<span class=\"clue-sentence\">If I <b class=\"fill\">were</b> you, <mark>I would accept</mark> the offer.</span><br>🔍 « would » = hypothèse irréelle → If + were.","tip":"Les autres choix : am → Présent : ne va pas avec would.  |  was → was  : familier, pas la forme standard.  |  will be → Futur : incorrect.","shortcut":"If + were … would + base."},{"grp":"bk-Temps","div":"Had we known about the delay, ","q":"Had we known about the delay, we ______ the schedule.","options":["would adjust","would have adjusted","adjusted","will adjust"],"correct":1,"rule":"Temps","exp":"<span class=\"clue-sentence\"><mark>Had we known</mark> about the delay, we <b class=\"fill\">would have adjusted</b> the schedule.</span><br>🔍 « Had we known » = condition irréelle du passé → would have + participe passé.","tip":"Les autres choix : would adjust → Présent : ne va pas avec le passé irréel.  |  adjusted → Prétérit : incorrect.  |  will adjust → Futur : incorrect.","shortcut":"Had + sujet + participe → would have + participe."},{"grp":"bk-Préposition ou conjonction","div":"The new hires will receive tra","q":"The new hires will receive training ______ their first week.","options":["during","while","since","by"],"correct":0,"rule":"Préposition ou conjonction","exp":"<span class=\"clue-sentence\">The new hires will receive training <b class=\"fill\">during</b> <mark>their first week</mark>.</span><br>🔍 Après le trou : un groupe nominal (période) → during.","tip":"Les autres choix : while → while  + sujet + verbe.  |  since → since  + point de départ passé.  |  by → by  = date limite.","shortcut":"during + nom ; while + sujet + verbe."},{"grp":"bk-Préposition","div":"The seminar starts ------- 9:3","q":"The seminar starts ______ 9:30 a.m.","options":["in","on","at","by"],"correct":2,"rule":"Préposition","exp":"<span class=\"clue-sentence\">The seminar starts <b class=\"fill\">at</b> <mark>9:30 a.m.</mark></span><br>🔍 Heure précise → at.","tip":"Les autres choix : in → in  + mois, année.  |  on → on  + jour, date.  |  by → by  = date limite.","shortcut":"at + heure ; on + jour ; in + mois/année."},{"grp":"bk-Préposition","div":"The staff meeting has been pos","q":"The staff meeting has been postponed ______ further notice.","options":["until","by","during","since"],"correct":0,"rule":"Préposition","exp":"<span class=\"clue-sentence\">The staff meeting has been postponed <b class=\"fill\">until</b> <mark>further notice</mark>.</span><br>🔍 Expression fixe : until further notice = jusqu’à nouvel ordre.","tip":"Les autres choix : by → by  = date limite.  |  during → during  ne convient pas.  |  since → since  ne convient pas.","shortcut":"until further notice (fixe)."},{"grp":"bk-Préposition","div":"Visitors are asked to sign in ","q":"Visitors are asked to sign in ______ entering the building.","options":["before","during","between","among"],"correct":0,"rule":"Préposition","exp":"<span class=\"clue-sentence\">Visitors are asked to <mark>sign in</mark> <b class=\"fill\">before</b> <mark>entering</mark> the building.</span><br>🔍 On s’annonce avant d’entrer → before + -ing.","tip":"Les autres choix : during → during  + nom.  |  between → between  : deux éléments.  |  among → among  : un groupe.","shortcut":"before + -ing = avant de."},{"grp":"bk-Classe de mot","div":"We are ------- to announce the","q":"We are ______ to announce the opening of our new store.","options":["please","pleased","pleasing","pleasure"],"correct":1,"rule":"Classe de mot","exp":"<span class=\"clue-sentence\"><mark>We are</mark> <b class=\"fill\">pleased</b> <mark>to announce</mark> the opening of our new store.</span><br>🔍 « be pleased to » = être heureux de.","tip":"Les autres choix : please → Verbe de base : incorrect.  |  pleasing → -ing décrit la chose.  |  pleasure → Nom : incorrect.","shortcut":"be pleased to / be happy to + verbe."},{"grp":"bk-Classe de mot","div":"The IT team is ------- upgradi","q":"The IT team is ______ upgrading the entire network.","options":["currently","current","currency","currentness"],"correct":0,"rule":"Classe de mot","exp":"<span class=\"clue-sentence\">The IT team <mark>is</mark> <b class=\"fill\">currently</b> <mark>upgrading</mark> the entire network.</span><br>🔍 Entre « is » et un verbe en -ing → adverbe : currently.","tip":"Les autres choix : current → Adjectif : ne décrit pas un verbe.  |  currency → currency  = monnaie.  |  currentness → Nom : incorrect.","shortcut":"Entre be et -ing → adverbe."},{"grp":"bk-Pronom","div":"Employees ------- wish to atte","q":"Employees ______ wish to attend the workshop should register online.","options":["who","whom","whose","which"],"correct":0,"rule":"Pronom","exp":"<span class=\"clue-sentence\"><mark>Employees</mark> <b class=\"fill\">who</b> <mark>wish</mark> to attend the workshop should register online.</span><br>🔍 Personnes, sujet de « wish » → who.","tip":"Les autres choix : whom → whom  = complément.  |  whose → whose  + nom.  |  which → which  = choses.","shortcut":"who = personne sujet ; which = chose."},{"grp":"bk-Pronom","div":"The project, ------- began las","q":"The project, ______ began last March, is almost complete.","options":["who","which","what","whom"],"correct":1,"rule":"Pronom","exp":"<span class=\"clue-sentence\"><mark>The project</mark>, <b class=\"fill\">which</b> <mark>began</mark> last March, is almost complete.</span><br>🔍 « The project » est une chose, sujet de « began » → which.","tip":"Les autres choix : who → who  = personnes.  |  what → what  ne relie pas à un nom.  |  whom → whom  = personne complément.","shortcut":"Chose → which ; personne → who."},{"grp":"bk-Pronom","div":"Ms. Kim, ------- office is on ","q":"Ms. Kim, ______ office is on the fifth floor, will join us.","options":["who","whom","whose","which"],"correct":2,"rule":"Pronom","exp":"<span class=\"clue-sentence\">Ms. Kim, <b class=\"fill\">whose</b> <mark>office</mark> is on the fifth floor, will join us.</span><br>🔍 Devant « office » qui appartient à Ms. Kim → whose.","tip":"Les autres choix : who → who  ne se place pas devant un nom.  |  whom → whom  : complément.  |  which → which  = choses.","shortcut":"whose + nom = dont le / dont la."},{"grp":"bk-Pronom","div":"Mr. Lopez prepared the entire ","q":"Mr. Lopez prepared the entire presentation by ______.","options":["he","him","himself","his"],"correct":2,"rule":"Pronom","exp":"<span class=\"clue-sentence\">Mr. Lopez prepared the entire presentation <mark>by</mark> <b class=\"fill\">himself</b>.</span><br>🔍 « by + pronom réfléchi » = tout seul : by himself.","tip":"Les autres choix : he → Sujet : impossible après by.  |  him → Complément : ne donne pas  tout seul .  |  his → Possessif : incorrect.","shortcut":"by + himself / herself = tout seul."},{"grp":"bk-Voix passive","div":"Due to the storm, the flight w","q":"Due to the storm, the flight was ______ for two hours.","options":["delay","delayed","delaying","delays"],"correct":1,"rule":"Voix passive","exp":"<span class=\"clue-sentence\">Due to the storm, <mark>the flight was</mark> <b class=\"fill\">delayed</b> for two hours.</span><br>🔍 Le vol subit le retard → was + participe passé : delayed.","tip":"Les autres choix : delay → Base : incorrect après was.  |  delaying → -ing : le vol ne retarde pas.  |  delays → Présent : incorrect après was.","shortcut":"Sujet qui subit → be + participe passé."},{"grp":"bk-Accord","div":"Our company ------- over 500 p","q":"Our company ______ over 500 products worldwide.","options":["sell","sells","selling","is sold"],"correct":1,"rule":"Accord","exp":"<span class=\"clue-sentence\"><mark>Our company</mark> <b class=\"fill\">sells</b> over 500 products worldwide.</span><br>🔍 Sujet singulier au présent → verbe en -s : sells.","tip":"Les autres choix : sell → Il manque le -s.  |  selling → Pas de verbe conjugué.  |  is sold → Passif : la société vend, elle n’est pas vendue.","shortcut":"Sujet singulier + présent → verbe + s."},{"grp":"bk-Accord","div":"The number of applicants -----","q":"The number of applicants ______ risen steadily.","options":["have","has","are","were"],"correct":1,"rule":"Accord","exp":"<span class=\"clue-sentence\"><mark>The number of</mark> <mark>applicants</mark> <b class=\"fill\">has</b> risen steadily.</span><br>🔍 « The number of » → sujet singulier → has.","tip":"Les autres choix : have → Pluriel : incorrect ici.  |  are → Pluriel : incorrect.  |  were → Pluriel : incorrect.","shortcut":"The number of → singulier ; a number of → pluriel."},{"grp":"bk-Accord","div":"A number of employees ------- ","q":"A number of employees ______ requested a schedule change.","options":["has","have","is","was"],"correct":1,"rule":"Accord","exp":"<span class=\"clue-sentence\"><mark>A number of</mark> employees <b class=\"fill\">have</b> requested a schedule change.</span><br>🔍 « A number of » = plusieurs → pluriel → have.","tip":"Les autres choix : has → Singulier : incorrect.  |  is → Singulier : incorrect.  |  was → Singulier : incorrect.","shortcut":"A number of → pluriel."},{"grp":"bk-Accord","div":"Each of the managers ------- a","q":"Each of the managers ______ a company car.","options":["receive","receives","are receiving","have received"],"correct":1,"rule":"Accord","exp":"<span class=\"clue-sentence\"><mark>Each of</mark> the managers <b class=\"fill\">receives</b> a company car.</span><br>🔍 « Each » est toujours singulier → receives.","tip":"Les autres choix : receive → Pluriel : incorrect.  |  are receiving → Pluriel : incorrect.  |  have received → Pluriel : incorrect.","shortcut":"Each / Every / Neither + verbe singulier."},{"grp":"bk-Conjonction","div":"The speaker was ------- nervou","q":"The speaker was ______ nervous that she forgot to bring her notes.","options":["so","such","too","very"],"correct":0,"rule":"Conjonction","exp":"<span class=\"clue-sentence\">The speaker was <b class=\"fill\">so</b> <mark>nervous</mark> <mark>that she forgot</mark> to bring her notes.</span><br>🔍 so + adjectif + that = tellement … que.","tip":"Les autres choix : such → such  + nom.  |  too → too  + to.  |  very → very  n’appelle pas that.","shortcut":"so + adj + that ; such + nom + that."},{"grp":"bk-Verbe","div":"The board will ------- the pro","q":"The board will ______ the proposal at tomorrow’s meeting.","options":["discuss","discuss about","discussion","discussing"],"correct":0,"rule":"Verbe","exp":"<span class=\"clue-sentence\">The board <mark>will</mark> <b class=\"fill\">discuss</b> <mark>the proposal</mark> at tomorrow’s meeting.</span><br>🔍 Après will : forme de base. Et « discuss » n’a pas de « about ».","tip":"Les autres choix : discuss about → discuss  est suivi directement de l’objet.  |  discussion → Nom : incorrect.  |  discussing → -ing : incorrect après will.","shortcut":"discuss + objet (sans about)."},{"grp":"bk-Vocabulaire","div":"Please ------- me know if you ","q":"Please ______ me know if you have any questions.","options":["let","make","tell","say"],"correct":0,"rule":"Vocabulaire","exp":"<span class=\"clue-sentence\">Please <b class=\"fill\">let</b> <mark>me know</mark> if you have any questions.</span><br>🔍 Expression fixe : let me know.","tip":"Les autres choix : make → make me know  : incorrect.  |  tell → tell me know  : incorrect.  |  say → say me know  : incorrect.","shortcut":"let me know (fixe)."},{"grp":"bk-Classe de mot","div":"The store offers a 10 percent ","q":"The store offers a 10 percent ______ on purchases over $100.","options":["discount","discounted","discounting","discounts"],"correct":0,"rule":"Classe de mot","exp":"<span class=\"clue-sentence\">The store offers <mark>a 10 percent</mark> <b class=\"fill\">discount</b> on purchases over $100.</span><br>🔍 Après « a 10 percent » : un nom singulier → discount.","tip":"Les autres choix : discounted → Participe : incorrect.  |  discounting → -ing : incorrect.  |  discounts → Pluriel : incompatible avec  a .","shortcut":"a + nom singulier."},{"grp":"bk-Voix passive","div":"All expenses must be ------- b","q":"All expenses must be ______ by a receipt.","options":["accompanied","accompanying","accompany","accompanies"],"correct":0,"rule":"Voix passive","exp":"<span class=\"clue-sentence\">All expenses <mark>must be</mark> <b class=\"fill\">accompanied</b> <mark>by a receipt</mark>.</span><br>🔍 must be + participe passé : accompanied.","tip":"Les autres choix : accompanying → -ing : incorrect après must be.  |  accompany → Base : incorrect après must be.  |  accompanies → Présent : incorrect.","shortcut":"modal + be + participe passé = passif."},{"grp":"bk-Classe de mot","div":"The consultant gave us a -----","q":"The consultant gave us a ______ analysis of the market.","options":["thorough","thoroughly","thoroughness","thoroughfare"],"correct":0,"rule":"Classe de mot","exp":"<span class=\"clue-sentence\">The consultant gave us a <b class=\"fill\">thorough</b> <mark>analysis</mark> of the market.</span><br>🔍 Entre « a » et le nom « analysis » → adjectif : thorough.","tip":"Les autres choix : thoroughly → Adverbe : ne qualifie pas un nom.  |  thoroughness → Nom : incorrect ici.  |  thoroughfare → thoroughfare  = grande route.","shortcut":"Article + adjectif + nom."},{"grp":"bk-Voix passive","div":"We regret to inform you that t","q":"We regret to inform you that the position has already been ______.","options":["fill","filled","filling","fills"],"correct":1,"rule":"Voix passive","exp":"<span class=\"clue-sentence\">We regret to inform you that the position <mark>has already been</mark> <b class=\"fill\">filled</b>.</span><br>🔍 has been + participe passé : filled.","tip":"Les autres choix : fill → Base : incorrect.  |  filling → -ing : incorrect.  |  fills → Présent : incorrect.","shortcut":"has/have been + participe passé."},{"grp":"bk-Vocabulaire","div":"Prices may vary ------- on the","q":"Prices may vary ______ on the season.","options":["depend","depending","depends","dependent"],"correct":1,"rule":"Vocabulaire","exp":"<span class=\"clue-sentence\">Prices may vary <b class=\"fill\">depending</b> <mark>on the season</mark>.</span><br>🔍 Expression : depending on = selon.","tip":"Les autres choix : depend → Base : incorrect.  |  depends → Présent : incorrect.  |  dependent → dependent on  s’emploie avec be.","shortcut":"depending on = selon."},{"grp":"bk-Temps","div":"The agency has been ------- cl","q":"The agency has been ______ clients for over twenty years.","options":["serve","serving","served","service"],"correct":1,"rule":"Temps","exp":"<span class=\"clue-sentence\">The agency <mark>has been</mark> <b class=\"fill\">serving</b> clients <mark>for over twenty years</mark>.</span><br>🔍 has been + -ing : action qui dure depuis vingt ans.","tip":"Les autres choix : serve → Base : incorrect.  |  served → Participe : changerait le sens.  |  service → Nom : incorrect.","shortcut":"has been + -ing + for/since."}]);
+    // Générateur modèles × vocabulaire
+    (function () {
+    const out = [];
+    const hl = (s, ks) => { ks.forEach(k => { s = s.replace(k, '<mark>' + k + '</mark>'); }); return s; };
+    const mk = (rule, grp, div, sent, key, opts, ans, clue, wrong, gold) => out.push({ id: sent + '|' + opts.slice().sort().join(), q: sent, options: opts, correct: opts.indexOf(ans), rule, grp, div,
+        exp: '<span class="clue-sentence">' + hl(sent, key).replace('______', '<b class="fill">' + ans + '</b>') + '</span><br>🔍 ' + clue, tip: wrong, shortcut: gold });
+    // --- A. Formes de mots (12 familles × 11 phrases) ---
+    const FAM = [["decision","decide","decisive","decisively"],["success","succeed","successful","successfully"],["difference","differ","different","differently"],["creation","create","creative","creatively"],["production","produce","productive","productively"],["competition","compete","competitive","competitively"],["economy","economize","economic","economically"],["reliability","rely","reliable","reliably"],["consistency","consist","consistent","consistently"],["significance","signify","significant","significantly"],["activity","activate","active","actively"],["preference","prefer","preferable","preferably"]];
+    const ADV = [["The proposal was ______ reviewed by the board.",["was","reviewed"]],["All invoices are ______ checked by the accounting team.",["are","checked"]],["The new system has been ______ tested by our engineers.",["has been","tested"]],["The contract was ______ approved by the director.",["was","approved"]],["The shipment was ______ delivered to our customers.",["was","delivered"]],["Several errors were ______ corrected by the staff.",["were","corrected"]]];
+    const ADJ = [["The results of the survey were ______.",["were"]],["Ms. Lopez’s new approach seems ______.",["seems"]],["The firm’s sales strategy has become ______.",["has become"]],["The project manager appears ______.",["appears"]],["The new software looks ______.",["looks"]],["Our main competitor remains ______.",["remains"]]];
+    const NOU = [["The workshop stressed the importance of ______ in modern business.",["importance of"]],["Employees were asked to explain the reasons for ______ in their department.",["reasons for"]],["The consultant gave a short talk about the value of ______ in teams.",["value of"]],["Several participants asked questions about ______ at the seminar.",["about"]],["The director congratulated the team on its ______ this year.",["on its"]]];
+    FAM.forEach(([n, v, a, d]) => {
+        const all = [n, v, a, d];
+        ADV.forEach(([s, k], i) => mk("Classe de mot", "wf-adv", "wfA" + i, s, k, all, d, "Le trou est entre « " + k[0] + " » et « " + k[1] + " » (un participe). Un mot qui décrit un verbe = adverbe (souvent en -ly).", "Un nom, un verbe ou un adjectif ne peut pas se placer entre l’auxiliaire et le participe.", "Entre l’auxiliaire et le participe → adverbe (-ly)."));
+        ADJ.forEach(([s, k], i) => mk("Classe de mot", "wf-adj", "wfJ" + i, s, k, all, a, "Après « " + k[0] + " » (verbe d’état), on décrit le sujet : il faut un adjectif.", "Un nom ou un adverbe ne peut pas décrire le sujet après ce verbe.", "be / seem / become / appear + adjectif."));
+        NOU.forEach(([s, k], i) => mk("Classe de mot", "wf-noun", "wfN" + i, s, k, all, n, "Après « " + k[0] + " » (préposition), il faut un nom.", "Après une préposition, ni verbe, ni adjectif, ni adverbe seuls.", "Préposition + nom."));
+    });
+    // --- B. Prépositions de temps ---
+    const EV = ["The staff meeting","The product launch","The training session","The annual conference","The board meeting","The job fair"];
+    const TM = { on: ["Monday","Tuesday, March 4","Friday morning","July 12","the first day of the month"], in: ["June","2027","the spring","the afternoon","early September"], at: ["9:30 a.m.","noon","3 p.m.","the end of the day","midnight"] };
+    const TC = { on: "Un jour ou une date précise → on.", in: "Un mois, une année, une saison ou un moment de la journée → in.", at: "Une heure ou un moment précis → at." };
+    Object.keys(TM).forEach(p => TM[p].forEach((t, i) => [0, 1].forEach(j => mk("Préposition", "pre-time", "T" + t, EV[(i + j * 3) % 6] + " will take place ______ " + t + ".", [t], ["in","on","at","by"], p, TC[p], "« by » marque une échéance : un événement n’a pas de date limite.", "on + jour/date ; in + mois/année/saison ; at + heure."))));
+    const DUR = [["three years","for"],["ten months","for"],["a decade","for"],["two weeks","for"],["2018","since"],["last March","since"],["January 2020","since"],["the merger","since"]];
+    ["Ms. Tanaka has worked here","The firm has operated in Asia","Mr. Dubois has managed the team","The store has offered free delivery"].forEach((s, i) => DUR.forEach(([t, p], j) => { if ((i + j) % 2 === 0) mk("Préposition", "pre-dur", "D" + t, s + " ______ " + t + ".", [t], ["for","since","during","while"], p, p === "for" ? "« " + t + " » est une durée → for." : "« " + t + " » est un point de départ dans le passé → since.", "« during » + période précise ; « while » + sujet + verbe.", "for + durée ; since + point de départ."); }));
+    // --- C. Temps verbaux ---
+    const VB = [["approve","approved","the budget"],["announce","announced","a merger"],["cancel","canceled","the order"],["confirm","confirmed","the reservation"],["sign","signed","the contract"],["submit","submitted","the report"],["launch","launched","a new product"],["open","opened","a second branch"],["hire","hired","two engineers"],["install","installed","new software"]];
+    const SU = ["The director","The finance team","Ms. Kim","The company","Mr. Dubois"], PM = ["last week","yesterday","two days ago","last year","in March"], FM = ["next month","tomorrow","next week","next year"];
+    VB.forEach(([b, p, o], i) => {
+        [i % 5, (i + 2) % 5].forEach(m => mk("Temps", "tense-past", "P" + b + m, SU[(i + m) % 5] + " ______ " + o + " " + PM[m] + ".", [PM[m]], [p, b + (/(ch|sh|s|x)$/.test(b) ? "es" : "s"), "will " + b, "has " + p], p, "« " + PM[m] + " » indique le passé → prétérit (" + p + ").", "Le présent, le futur et le present perfect sont incompatibles avec un repère passé.", "Repère passé (last week, yesterday, ago) → prétérit."));
+        [i % 4, (i + 1) % 4].forEach(m => mk("Temps", "tense-fut", "F" + b + m, SU[(i + m + 1) % 5] + " ______ " + o + " " + FM[m] + ".", [FM[m]], ["will " + b, p, "has " + p, "had " + p], "will " + b, "« " + FM[m] + " » indique le futur → will + verbe de base.", "Passé et present perfect ne vont pas avec un repère futur.", "Repère futur (next, tomorrow) → will + base."));
+    });
+    const CL = [["sign","signs","signed","the contract"],["approve","approves","approved","the design"],["confirm","confirms","confirmed","the order"],["review","reviews","reviewed","the proposal"],["renew","renews","renewed","the agreement"],["submit","submits","submitted","the application"]];
+    CL.forEach(([b, s, p, o], i) => {
+        ["as soon as", "once", "before", "when"].forEach(c => mk("Temps", "tense-clause", "C" + b + c, "We will start work " + c + " the client ______ " + o + ".", [c], [s, "will " + b, p, "would " + b], s, "Après « " + c + " », le futur s’exprime au présent simple.", "Pas de « will » ni de « would » après " + c + ".", "as soon as / once / before / when + présent (jamais will)."));
+        mk("Temps", "tense-if", "I" + b, "If the client ______ " + o + ", we will start work immediately.", ["If", "we will"], [s, "will " + b, p, "would " + b], s, "« If … , we will » : condition réelle → If + présent.", "Pas de « will » après If ; passé et would changent le sens.", "If + présent → will + base.");
+    });
+    // --- D. Pronoms ---
+    const PE = ["The applicants","The interns","Our clients","The engineers","The sales representatives","The auditors"], TH = ["The reports","The invoices","The machines","The contracts","The laptops"];
+    const PP = ["applied for the position will be contacted soon.","attended the seminar received a certificate.","joined the company last year are eligible for training."], TP = ["were damaged during shipping must be replaced.","arrived late were returned to the supplier.","are listed below require approval."];
+    PE.forEach((p, i) => PP.forEach((t, j) => { if ((i + j) % 2 === 0) mk("Pronom", "pro-rel", "R" + p + j, p + " ______ " + t, [p], ["who","which","whose","whom"], "who", "« " + p + " » = des personnes, sujet du verbe qui suit → who.", "« which » est pour les choses ; « whose » demande un nom ; « whom » est un complément.", "Personne sujet → who ; chose → which."); }));
+    TH.forEach((p, i) => TP.forEach((t, j) => mk("Pronom", "pro-rel", "R" + p + j, p + " ______ " + t, [p], ["who","which","whose","whom"], "which", "« " + p + " » = des choses, sujet du verbe qui suit → which.", "« who » et « whom » sont pour les personnes ; « whose » demande un nom.", "Personne sujet → who ; chose → which.")));
+    ["Ms. Kim","Mr. Lopez","Dr. Weber"].forEach(p => ["office","team","desk","department"].forEach(n => mk("Pronom", "pro-whose", "W" + p + n, p + ", ______ " + n + " is on the third floor, will join us.", [n], ["who","whom","whose","which"], "whose", "Le trou est juste devant le nom « " + n + " » qui appartient à " + p + " → whose.", "« who », « whom » et « which » ne se placent pas devant un nom.", "whose + nom = dont le / dont la.")));
+    const SS = ["Employees","Visitors","Contractors","Applicants","Guests"], NN = ["badge","ID card","parking pass","access card","ticket"];
+    SS.forEach((s, i) => [0, 1, 2].forEach(j => mk("Pronom", "pro-poss", "O" + s + j, "All " + s.toLowerCase() + " must show ______ " + NN[(i + j) % 5] + " at the entrance.", [NN[(i + j) % 5]], ["their","they","them","theirs"], "their", "Devant le nom « " + NN[(i + j) % 5] + " » : adjectif possessif → their.", "« they » et « them » ne se placent pas devant un nom ; « theirs » remplace un nom.", "Devant un nom → possessif (their, his, her, our…)")));
+    [["Mr. Lopez","himself","he","him","his"],["Ms. Tanaka","herself","she","her","hers"],["Mr. Park","himself","he","him","his"],["Ms. Alvarez","herself","she","her","hers"]].forEach(([n, r, a, b, c]) => ["prepared the entire presentation","completed the budget analysis","organized the whole event","wrote the final report"].forEach(t => mk("Pronom", "pro-refl", "S" + n + t, n + " " + t + " by ______.", ["by"], [r, a, b, c], r, "« by + pronom » = tout seul : il faut le pronom réfléchi (" + r + ").", "Sujet, complément et possessif ne donnent pas le sens « tout seul ».", "by himself / herself = tout seul.")));
+    // --- E. Connecteurs ---
+    const RS = { res: ["Therefore","Consequently","As a result","Thus"], con: ["However","Nevertheless","Nonetheless","Even so"], add: ["Moreover","In addition","Furthermore","Besides"], alt: ["Otherwise"] };
+    const RC = { res: "La 2e phrase est la conséquence de la 1re → connecteur de conséquence.", con: "Les deux phrases s’opposent → connecteur d’opposition.", add: "La 2e phrase ajoute une information → connecteur d’addition.", alt: "« Sinon » : la 2e phrase dit ce qui arrive si on ne le fait pas → Otherwise." };
+    const PR = { res: [["Sales dropped sharply in March","the company reduced its advertising costs"],["The supplier delayed the shipment","we had to postpone the launch"],["Our new website was easy to use","online orders doubled in two months"],["Several employees were absent","the meeting was rescheduled"],["The road to the factory was closed","deliveries arrived a day late"]],
+        con: [["Ms. Kim has only two years of experience","she was promoted to team leader"],["The forecast was pessimistic","sales exceeded every target"],["The training was optional","nearly all employees attended"],["Prices rose last year","demand for our products remained strong"],["The first prototype failed","the engineers refused to give up"]],
+        add: [["The hotel offers free breakfast","guests can use the fitness center at no charge"],["Our printers are energy efficient","they are very quiet"],["The firm provides health insurance","it offers generous paid leave"],["Ms. Lopez speaks three languages","she has ten years of sales experience"],["The venue is close to the station","it has ample parking"]],
+        alt: [["Please confirm your attendance by Friday","we will give your seat to another guest"],["Employees must wear safety goggles","they may be injured"],["The invoice should be paid within 30 days","a late fee will apply"],["Back up your files regularly","you could lose important data"],["Please sign in at the front desk","you will not be allowed into the building"]] };
+    Object.keys(PR).forEach(r => PR[r].forEach(([a, b], i) => RS[r].forEach((w, k) => { const o = [w]; Object.keys(RS).forEach(r2 => { if (r2 !== r) o.push(RS[r2][(i + k) % RS[r2].length]); });
+        mk("Connecteur", "con-" + r, "K" + r + i, a + ". ______, " + b + ".", [], o, w, RC[r], "Les autres connecteurs expriment un autre lien logique entre les deux phrases.", "Lis les 2 phrases : conséquence, opposition, addition ou « sinon » ?"); })));
+    // --- F. Préposition ou conjonction ---
+    const PC = [
+        ["Despite", "Although", ["the heavy rain","the high ticket prices","the late notice","the strong competition","the budget cuts","the technical problems"], ["it rained heavily","the tickets were expensive","the notice was short","competition was strong","the budget was cut","there were technical problems"], ["the event went ahead as planned.","the conference attracted a large audience.","the launch was a success."], ["Despite","Although","However","Because"], "opposition"],
+        ["Because of", "Because", ["the storm","a power failure","the road construction","the lack of funding","a staff shortage"], ["a storm hit the city","the power failed","the road was under construction","funding was lacking","staff were short"], ["the flight was canceled.","the office closed early.","the shipment was delayed."], ["Because of","Because","Despite","Although"], "cause"],
+        ["During", "While", ["the presentation","the break","the renovation"], ["the presentation was in progress","employees were on break","the office was being renovated"], ["please keep your phone silent.","coffee will be served.","the entrance will remain closed."], ["During","While","By","Among"], "durée"]];
+    PC.forEach(([w1, w2, nps, cls, mains, opts, kind]) => { nps.forEach((np, i) => mk("Préposition ou conjonction", "pc-" + kind, "N" + np, "______ " + np + ", " + mains[i % 3], [np], opts, w1, "Après le trou : « " + np + " » = un groupe nominal, sans verbe → préposition (" + w1 + ").", "Une conjonction (" + w2 + ") a besoin d’un sujet + verbe.", w1 + " + nom ; " + w2 + " + sujet + verbe."));
+        cls.forEach((cl, i) => mk("Préposition ou conjonction", "pc-" + kind, "L" + cl, "______ " + cl + ", " + mains[(i + 1) % 3], [cl], opts, w2, "Après le trou : « " + cl + " » = sujet + verbe → conjonction (" + w2 + ").", "Une préposition (" + w1 + ") se place devant un nom, pas devant une phrase.", w1 + " + nom ; " + w2 + " + sujet + verbe.")); });
+    addQuestions(out);
+})();
+
 
 
     // ================= 3. MOTEUR DU JEU : chrono, score, écrans =================
@@ -608,19 +405,22 @@
     // Clavier : A-D ou 1-4 pour répondre, Entrée pour continuer
     document.addEventListener('keydown', e => {
         if (e.metaKey || e.ctrlKey || e.altKey) return;
+        if (gamePanel.style.display === 'none') { if (homePanel.style.display !== 'none' && e.key === 'Enter' && document.activeElement.tagName !== 'BUTTON') showGame(); return; }
         const n = { '1': 0, '2': 1, '3': 2, '4': 3, a: 0, b: 1, c: 2, d: 3 }[e.key.toLowerCase()];
         const btn = optionsContainer.querySelectorAll('.option-btn')[n];
         if (n !== undefined && btn && !btn.disabled) { btn.click(); return; }
         if (e.key === 'Enter' && document.activeElement.tagName !== 'BUTTON' && feedbackContainer.classList.contains('show')) nextQuestion();
     });
 
-    function startGame() {
+    function startGame(custom) {
         gamePanel.style.display = 'block';
         endPanel.style.display = 'none';
         
-        const seen = new Set();
-        currentQuestions = shuffleArray(dbQuestions).filter(q => !seen.has(q.q) && seen.add(q.q)).slice(0, 30);
-        if (currentQuestions.length < 30) currentQuestions = currentQuestions.concat(shuffleArray(dbQuestions).slice(0, 30 - currentQuestions.length));
+        const base = custom || pickRound();
+        currentQuestions = base.map(q => { const o = shuffleArray(q.options.map((t, i) => ({ t, ok: i === q.correct }))); return { ...q, options: o.map(x => x.t), correct: o.findIndex(x => x.ok) }; });
+        if (custom) currentQuestions = shuffleArray(currentQuestions);
+        roundMissed = [];
+        if (!custom) { qStats._r = (qStats._r || 0) + 1; saveStats(); }
         
         currentIndex = 0;
         score = 0;
@@ -659,6 +459,8 @@
         const buttons = optionsContainer.querySelectorAll('.option-btn');
         
         buttons.forEach(b => b.disabled = true);
+        recordAnswer(q, selectedIndex === q.correct);
+        if (selectedIndex !== q.correct) roundMissed.push(q);
         feedbackRule.textContent = q.rule;
         
         if (selectedIndex === q.correct) {
@@ -671,17 +473,17 @@
                     particleCount: 100,
                     spread: 70,
                     origin: { y: 0.6 },
-                    colors: ['#ff8c00', '#ffd700', '#2e7d32'],
+                    colors: ['#1e3a8a', '#2563eb', '#f59e0b', '#16a34a'],
                     zIndex: 1000
                 });
             }
 
             characterAvatar.innerHTML = happyGipson;
-            feedbackTitle.innerHTML = "🎯 Bullseye! Mr. Gipson nods.";
-            feedbackTitle.style.color = "#4caf50";
-            feedbackRule.style.background = "#1b5e20";
-            feedbackRule.style.borderColor = "#4caf50";
-            document.getElementById('tip-title-label').style.color = "#ffd700";
+            feedbackTitle.innerHTML = "✔ Correct! Well spotted.";
+            feedbackTitle.style.color = "#15803d";
+            feedbackRule.style.background = "#dcfce7";
+            feedbackRule.style.borderColor = "#15803d";
+            document.getElementById('tip-title-label').style.color = "#1d4ed8";
         } else {
             // Mauvaise réponse OU Temps écoulé
             if (selectedBtn) {
@@ -697,18 +499,18 @@
             characterAvatar.innerHTML = strictGipson;
             
             if (selectedIndex === -1) {
-                feedbackTitle.innerHTML = "⏰ Too slow! The target got away.";
+                feedbackTitle.innerHTML = "⏰ Time’s up. Watch the clock!";
             } else {
-                feedbackTitle.innerHTML = "❌ Misfire! Mr. Gipson glares at you.";
+                feedbackTitle.innerHTML = "✖ Not quite. Let’s see why.";
             }
             
-            feedbackTitle.style.color = "#ef5350";
-            feedbackRule.style.background = "#b71c1c";
-            feedbackRule.style.borderColor = "#ef5350";
-            document.getElementById('tip-title-label').style.color = "#ef5350"; 
+            feedbackTitle.style.color = "#b42318";
+            feedbackRule.style.background = "#fee4e2";
+            feedbackRule.style.borderColor = "#b42318";
+            document.getElementById('tip-title-label').style.color = "#1d4ed8"; 
         }
         
-        feedbackExp.innerHTML = `<strong>Why partner?</strong><br>${q.exp}`;
+        feedbackExp.innerHTML = `<strong>Explanation</strong><br>${q.exp}`;
         document.getElementById('feedback-tip-text').textContent = q.tip;
         document.getElementById('feedback-shortcut-text').textContent = q.shortcut;
         
@@ -734,6 +536,8 @@
         scoreDisplay.textContent = score;
         streakDisplay.textContent = streak;
         qCounter.textContent = Math.min(currentIndex + 1, currentQuestions.length);
+        document.getElementById('q-total').textContent = currentQuestions.length;
+        document.getElementById('qno').textContent = (101 + Math.min(currentIndex, currentQuestions.length - 1)) + '.';
         progress.style.width = `${(currentIndex / currentQuestions.length) * 100}%`;
     }
 
@@ -742,36 +546,98 @@
         gamePanel.style.display = 'none';
         endPanel.style.display = 'block';
         document.getElementById('final-score').textContent = score;
+        const max = currentQuestions.length * 10;
+        document.getElementById('final-max').textContent = max;
+        const full = currentQuestions.length === 30;
         let best = 0;
-        try { best = +localStorage.getItem('toeicGipsonBest') || 0; if (score > best) localStorage.setItem('toeicGipsonBest', score); } catch (e) {}
-        document.getElementById('best-score').textContent = score > best ? '🏅 New record!' : '🏅 Best bounty: $' + best;
+        try { best = +localStorage.getItem('toeicGipsonBest') || 0; if (full && score > best) localStorage.setItem('toeicGipsonBest', score); } catch (e) {}
+        document.getElementById('best-score').textContent = full && score > best ? '🏅 New record!' : '🏅 Best score: ' + best + ' / 300';
         
         let msg = "";
         let charSvg = "";
-        if(score >= 250) {
-            msg = "You're the fastest gun in the West! ETS better watch out. 🤠💰";
+        if(score >= max * 0.83) {
+            msg = "Excellent round! You are reading the clues like a pro. 🎓";
             charSvg = happyGipson;
             if (canConfetti()) {
                 const endConfetti = setInterval(() => {
-                    confetti({ particleCount: 50, spread: 100, origin: { y: 0.1 }, colors:['#ff8c00', '#ffd700'] });
+                    confetti({ particleCount: 50, spread: 100, origin: { y: 0.1 }, colors:['#1e3a8a', '#2563eb', '#f59e0b'] });
                 }, 1500);
                 setTimeout(() => clearInterval(endConfetti), 5000);
             }
         }
-        else if (score >= 150) {
-            msg = "Not bad, Sheriff. A little more target practice and you'll be a legend. 🐴";
+        else if (score >= max * 0.5) {
+            msg = "Good progress. Review your mistakes below, then try again.";
             charSvg = happyGipson;
         }
         else {
-            msg = "Your gun jammed, rookie. Time to head back to the training camp. 🌵";
+            msg = "Keep practising: read the rules below, then replay your mistakes.";
             charSvg = strictGipson;
         }
         
         document.getElementById('final-message').textContent = msg;
         document.getElementById('final-character').innerHTML = charSvg;
+        lastMissed = roundMissed.slice();
+        const byRule = {}; lastMissed.forEach(q => byRule[q.rule] = (byRule[q.rule] || 0) + 1);
+        document.getElementById('review-box').innerHTML = lastMissed.length
+            ? '<h3>Review your mistakes (' + lastMissed.length + ')</h3><p class="rv-rules">' + Object.entries(byRule).map(([r, n]) => r + ' ×' + n).join(' · ') + '</p>'
+              + lastMissed.map(q => '<div class="rv">' + q.q.replace('______', '<b>' + q.options[q.correct] + '</b>') + '</div>').join('')
+              + '<button class="home-btn" onclick="startGame(lastMissed)">Replay my mistakes</button>'
+            : '<p>🎓 Perfect round! Nothing to review.</p>';
     }
 
-    startGame();
+    // ================= 4. APPRENTISSAGE : stats, tirage varié, révision =================
+    let qStats = {}, roundMissed = [], lastMissed = [];
+    try { qStats = JSON.parse(localStorage.getItem('toeicGipsonStats') || '{}'); } catch (e) {}
+    function saveStats() { try { localStorage.setItem('toeicGipsonStats', JSON.stringify(qStats)); } catch (e) {} }
+    function recordAnswer(q, ok) {
+        const k = q.id || q.q, e = qStats[k] || (qStats[k] = { n: 0, w: 0, r: 0 });
+        e.n++; if (!ok) e.w++; e.r = qStats._r || 0; saveStats();
+    }
+    // Tirage : poids (jamais vue ×3, souvent ratée +, vue récemment ÷) + contraintes de variété
+    // (max 2 par modèle, max 5 par type de règle, 1 seul exemple par mot/thème)
+    function pickRound() {
+        const pool = [...new Map(dbQuestions.map(q => [q.id || q.q, q])).values()], r = qStats._r || 0, chosen = [], gc = {}, rc = {}, dv = new Set();
+        const weight = q => { const e = qStats[q.id || q.q] || { n: 0, w: 0, r: -9 }; let x = e.n ? 1 + 3 * e.w / e.n : 3; if (e.r === r) x *= 0.1; else if (e.r >= r - 2) x *= 0.4; return x; };
+        const g = q => q.grp || q.rule;
+        while (chosen.length < 30 && pool.length) {
+            let cand = pool.filter(q => (gc[g(q)] || 0) < 2 && (rc[q.rule] || 0) < 5 && !(q.div && dv.has(q.div)) && !dv.has(q.q));
+            if (!cand.length) cand = pool;
+            const ws = cand.map(weight); let t = Math.random() * ws.reduce((a, b) => a + b, 0), i = 0;
+            while (i < cand.length - 1 && (t -= ws[i]) > 0) i++;
+            const q = cand[i]; pool.splice(pool.indexOf(q), 1); chosen.push(q);
+            gc[g(q)] = (gc[g(q)] || 0) + 1; rc[q.rule] = (rc[q.rule] || 0) + 1; if (q.div) dv.add(q.div); dv.add(q.q);
+        }
+        return shuffleArray(chosen);
+    }
+
+    // ================= 5. ÉCRAN D'ACCUEIL =================
+    const homePanel = document.getElementById('home-panel');
+    function readBest() { try { return +localStorage.getItem('toeicGipsonBest') || 0; } catch (e) { return 0; } }
+    function showHome() {
+        stopTimer();
+        gamePanel.style.display = 'none';
+        endPanel.style.display = 'none';
+        homePanel.style.display = 'block';
+        document.getElementById('home-character').innerHTML = happyGipson;
+        const b = readBest();
+        const tot = Object.entries(qStats).filter(([k]) => k !== '_r').reduce((a, [, e]) => ({ n: a.n + e.n, w: a.w + e.w }), { n: 0, w: 0 });
+        document.getElementById('st-best').textContent = b ? b + '/300' : '–';
+        document.getElementById('st-rounds').textContent = qStats._r || 0;
+        document.getElementById('st-acc').textContent = tot.n ? Math.round(100 * (tot.n - tot.w) / tot.n) + '%' : '–';
+    }
+    function showGame() { homePanel.style.display = 'none'; startGame(); }
+    function confirmQuit() { if (confirm('Leave this round? Your progress will be lost.')) showHome(); }
+    function toggleHow() {
+        const box = document.getElementById('how-box');
+        box.hidden = !box.hidden;
+        document.getElementById('how-btn').setAttribute('aria-expanded', String(!box.hidden));
+    }
+    function resetBest() {
+        if (!confirm('Erase your best score and progress?')) return;
+        try { localStorage.removeItem('toeicGipsonBest'); localStorage.removeItem('toeicGipsonStats'); } catch (e) {} qStats = {};
+        showHome();
+    }
+    showHome();
 </script>
 
 <script>

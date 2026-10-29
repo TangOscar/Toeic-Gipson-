@@ -1,8 +1,8 @@
-const CACHE = "toeic-gipson-v3"; // changer le numéro à chaque mise à jour du jeu
+const CACHE = "part5-trainer-v6"; // changer le numéro à chaque mise à jour du jeu
 const FILES = [
   "./", "./index.html", "./manifest.webmanifest", "./confetti.browser.js",
   "./nunito-latin-400-normal.woff2", "./nunito-latin-700-normal.woff2",
-  "./nunito-latin-900-normal.woff2", "./rye-latin-400-normal.woff2",
+  "./nunito-latin-900-normal.woff2", 
   "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"
 ];
 self.addEventListener("install", (e) => {
